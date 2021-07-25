@@ -1,0 +1,8 @@
+#Path to eQTLGen_for_AMANDE:
+/sda1/home/ChuckNorris/eQTLGen_for_AMANDE
+#Path to GTEx_for_AMANDE:
+/home/StevenSeagal/GTEx_for_AMANDE
+#Path to INTERVAL_for_AMANDE:
+/sdz1/JeanClaudeVanDamme/INTERVAL_for_AMANDE
+#Path to snp151_for_AMANDE:
+/media/SylvesterStallone/snp151_for_AMANDE
