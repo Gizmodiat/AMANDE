@@ -1,0 +1,26 @@
+#!/usr/bin/Rscript
+
+library(MendelianRandomization)
+setwd("temporary")
+g = dir(pattern='_SNPs')
+SNP_table = read.table(g, header=T)
+correlation <- matrix()
+exposure <- c("exposure")
+outcome <- c("outcome")
+eaf <- c()
+MRInputObject <- mr_input(SNP_table$b_eQTL, SNP_table$b_eQTLse, SNP_table$b_GWAS, SNP_table$b_GWASse, correlation, exposure, outcome, SNP_table$snps, SNP_table$effect_allele, SNP_table$other_allele, eaf)
+result = mr_allmethods(MRInputObject)
+result_ivw = mr_ivw(MRInputObject)
+hetp_ivw = result_ivw$Heter.Stat[2]
+result_egger = mr_egger(MRInputObject)
+hetp_egger = result_egger$Heter.Stat[2]
+hetp_table = matrix(nrow=1, ncol=2, c(hetp_ivw, hetp_egger))
+colnames(hetp_table) = c("p_het_ivw","p_het_egger")
+write.table(result$Values, paste("Results_MR_all_methods_",g,".txt",sep=""), row.names=FALSE, col.names=TRUE, quote=FALSE, append=FALSE, sep="\t")
+write.table(hetp_table, paste("Results_heterogeneity_",g,".txt",sep=""), row.names=FALSE, col.names=TRUE, quote=FALSE, append=FALSE, sep="\t")
+pdf(paste("Plot_",g,"_MR.pdf",sep="")) 
+print(mr_plot(MRInputObject, interactive=FALSE))
+dev.off()
+pdf(paste("Plot_",g,"_MR_Egger.pdf",sep="")) 
+print(mr_plot(MRInputObject, interactive=FALSE, orientate=TRUE, line="egger"))
+dev.off()

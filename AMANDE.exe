@@ -1,0 +1,890 @@
+#! /bin/bash
+
+rm -rf temporary
+eQTLGen=$(sed '2q;d' config.txt | awk '{print}')
+GTEx=$(sed '4q;d' config.txt | awk '{print}')
+INTERVAL=$(sed '6q;d' config.txt | awk '{print}')
+snp151=$(sed '8q;d' config.txt | awk '{print}')
+GWAS=$(echo $2 | sed 's/-//g')
+rsID=$(echo $3 | sed 's/-//g')
+exposure=$(echo $4 | sed 's/-//g')
+window=$(echo $5 | sed 's/-//g')
+pvalue=$(echo $6 | sed 's/-//g')
+output=$(echo $7 | sed 's/-//g')
+if [ $rsID = "chr" ] && [ $exposure = "eqtlgen" ]
+then
+echo " "
+echo "==========AMANDE eQTLGen is launched (chr option)=========="
+echo " "
+echo "----------Window setting: "$window"kb"
+echo "----------Pvalue pruning IVs: "$pvalue
+echo "----------GWAS: "$GWAS
+echo "----------Output: "$output
+mkdir $output
+mkdir $output/${output}_files
+mkdir temporary
+echo -e "Gene\tIV\tIVW_QQ_P\tIVW_Estimate\tIVW_P\tEgger_Estimate\tEgger_P\tEgger_Intercept_P\tPosterior_prob\tRegional_prob\tCandidate_snp\tPosterior_explained_by_snp\tGlobal_Test_P\tEstimate\tP\tEstimate_Out-Corr\tP_Out-Corr\tDistortion_Test_P" > $output/${output}_summary.txt
+listGenes=$(cat $1)
+for gene in $listGenes
+do
+	info=$(echo $gene | tr "_" "\n")
+	ARR=()
+	for k in $info
+	do
+		ARR+=($k)
+	done
+	ID=${ARR[0]}
+	chr=${ARR[1]}
+	pos=${ARR[2]}
+	echo " "	
+	echo "=> Preparing files for "$ID"..."
+	start=$(($pos-$window*1000))
+	end=$(($pos+$window*1000))
+awk '{ if($8 ~ "'"$ID"'") { print } }' ${eQTLGen}/cis-eQTLs_full_20180905.txt | awk '($4 >= '$start') && ($4 <= '$end')  { print $0} ' | awk '{print $2, $1, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14}' > temporary/temp1
+awk 'FNR==NR{a[$1];next}($1 in a){print $1, $9}' temporary/temp1 ${eQTLGen}/cis-eQTLs_full_MAF.txt > temporary/temp11 ;
+sort -k1,1 temporary/temp1 > temporary/temp4 ;
+sort -k1,1 temporary/temp11 > temporary/temp5 ;
+join temporary/temp4 temporary/temp5 > temporary/temp14 ;
+awk '{print $2, $1, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15}' temporary/temp14 > temporary/temp4 ;
+awk '{print "chr"$3":"$4, $2, $6, $7, $5, $1, 1/(sqrt(2*$15*(1-$15)*($13+$5*$5)));}' temporary/temp4 > temporary/temp5 ;
+awk '{print $1, $2, $3, $4, $5, $6, $7, $5*$7;}' temporary/temp5 > temporary/temp6 ;
+awk '{print $1, $2, $3, $4, $8, $7, $6}' temporary/temp6 > temporary/temp7 ;
+awk '{ if($7 < '$pvalue') { print $1, $2, $3, $4, $5, $6, $7} }' temporary/temp7 > temporary/temp8 ;
+sort -k7 -g temporary/temp8 > temporary/${output}_${ID}_pot_IVs.txt ;
+awk '{print $2}' temporary/${output}_${ID}_pot_IVs.txt > temporary/tempsnps ;
+echo " "
+echo "=> Performing LD pruning for "$ID"..."
+./system/LDlink.R ;
+awk '{print}' temporary/tempa > temporary/${output}_${ID}_log_SNPClip.txt ;
+awk '/kept/' temporary/${output}_${ID}_log_SNPClip.txt > temporary/temp9 ;
+awk '{print $2}' temporary/temp9 > temporary/${output}_${ID}_rsID_IVs.txt ;
+awk 'FNR==NR{a[$1];next}($1 in a){print $1, $2, $3, $4, $5, $6}' temporary/${output}_${ID}_rsID_IVs.txt $GWAS > temporary/temp19 ;
+awk 'FNR==NR{a[$1];next}($1 in a){print $1, $3, $4, $5, $6, $7}' temporary/temp19 temporary/${output}_${ID}_pot_IVs.txt > temporary/temp20 ;
+{ echo 'rsID EA OA Beta se Pvalue'; cat temporary/temp19; } > temporary/${output}_${ID}_IVs_GWAS.txt ;
+{ echo 'rsID EA OA Beta se Pvalue'; cat temporary/temp20; } > temporary/${output}_${ID}_IVs_eQTLGen.txt ;
+sort -k1,1 temporary/temp19 > temporary/temp14 ;
+sort -k1,1 temporary/temp20 > temporary/temp15 ;
+awk 'FILENAME=="temporary/temp15"{A[$1$2]=$1$2}
+FILENAME=="'"temporary/${output}_${ID}_IVs_GWAS.txt"'"{if(A[$1$2]){print $1, $2, $3, $4, $5, $6}}' temporary/temp15 temporary/${output}_${ID}_IVs_GWAS.txt > temporary/temp17 ;
+awk 'FILENAME=="temporary/temp15"{A[$1$2]=$1$2}
+FILENAME=="'"temporary/${output}_${ID}_IVs_GWAS.txt"'"{if(A[$1$3]){print $1, $2, $3, (-$4), $5, $6}}' temporary/temp15 temporary/${output}_${ID}_IVs_GWAS.txt > temporary/temp18 ;
+cat temporary/temp17 temporary/temp18 > temporary/temp20 ;
+sort -k1,1 temporary/temp20 > temporary/temp21 ;
+join temporary/temp15 temporary/temp21 > temporary/temp22 ;
+awk '{print $1, $3, $2, $4, $5, $9, $10}' temporary/temp22 > temporary/temp23 ;
+{ echo 'snps other_allele effect_allele b_eQTL b_eQTLse b_GWAS b_GWASse'; cat temporary/temp23; } > temporary/${output}_${ID}_SNPs ;
+mkdir $output/${output}_files/${output}_${ID} ;
+mkdir $output/${output}_files/${output}_${ID}/${output}_${ID}_IVs ;
+mkdir $output/${output}_files/${output}_${ID}/${output}_${ID}_MR ;
+mkdir $output/${output}_files/${output}_${ID}/${output}_${ID}_HyPrColoc ;
+mkdir $output/${output}_files/${output}_${ID}/${output}_${ID}_MR-PRESSO ;
+echo " "
+echo "=> Performing Mendelian randomization for "$ID"..."
+./system/MR.R ;
+awk 'FNR==NR{a[$1];next}($1 in a){print $1, $2, $3, $4, $5}' temporary/temp7 $GWAS > temporary/temp24 ;
+awk 'FNR==NR{a[$1];next}($1 in a){print $1, $3, $4, $5, $6}' temporary/temp24 temporary/temp7 > temporary/temp25 ;
+awk 'FILENAME=="'"temporary/temp25"'"{A[$1$2]=$1$2}
+FILENAME=="'"temporary/temp24"'"{if(A[$1$2]){print $1, $2, $3, $4, $5}}' temporary/temp25 temporary/temp24 > temporary/tempc ;
+awk 'FILENAME=="'"temporary/temp25"'"{A[$1$2]=$1$2}
+FILENAME=="'"temporary/temp24"'"{if(A[$1$3]){print $1, $2, $3, (-$4), $5}}' temporary/temp25 temporary/temp24 > temporary/tempd ;
+cat temporary/tempc temporary/tempd > temporary/tempe ;
+sort -k1,1 temporary/temp25 > temporary/temp26
+sort -k1,1 temporary/tempe > temporary/tempf
+join temporary/temp26 temporary/tempf > temporary/temp28 ;
+awk '{print $1, $4, $8}' temporary/temp28 > temporary/temp29 ;
+{ echo 'T1 T2'; cat temporary/temp29; } > temporary/${output}_${ID}_input_HyPrColoc_Beta.txt ;
+awk '{print $1, $5, $9}' temporary/temp28 > temporary/temp30 ;
+{ echo 'T1 T2'; cat temporary/temp30; } > temporary/${output}_${ID}_input_HyPrColoc_SE.txt ;
+echo " "
+echo "=> Performing colocalization for "$ID"..."
+./system/HyPrColoc.R
+mv temporary/out_hyprcoloc.txt temporary/${output}_${ID}_output_HyPrColoc.txt
+awk '{print $1, $3, $2, $4, $5, $6, $9, $10, $11}' temporary/temp22 > temporary/tempb ;
+{ echo 'snps other_allele effect_allele E1_Effect E1_se p_E1 Y_Effect Y_se p_Y'; cat temporary/tempb; } > temporary/${output}_${ID}_MR-PRESSO ;
+echo " "
+echo "=> Performing MR-PRESSO for "$ID"..."
+./system/MR-PRESSO.R ;
+IV=$(wc -l temporary/${output}_${ID}_SNPs | awk '{print $1-1}')
+if (($IV >= 3))
+then
+	IVW_QQ=$(tail -n +2 temporary/Results_heterogeneity_${output}_${ID}_SNPs.txt | awk '{print $1}')
+	IVW_Estimate=$(sed '5q;d' temporary/Results_MR_all_methods_${output}_${ID}_SNPs.txt | awk '{print $2}')
+	IVW_P=$(sed '5q;d' temporary/Results_MR_all_methods_${output}_${ID}_SNPs.txt | awk '{print $6}')
+	Egger_Estimate=$(sed '9q;d' temporary/Results_MR_all_methods_${output}_${ID}_SNPs.txt | awk '{print $2}')
+	Egger_P=$(sed '9q;d' temporary/Results_MR_all_methods_${output}_${ID}_SNPs.txt | awk '{print $6}')
+	Egger_P_Intercept=$(sed '10q;d' temporary/Results_MR_all_methods_${output}_${ID}_SNPs.txt | awk '{print $6}')
+	coloc=$(tail -n +2 temporary/${output}_${ID}_output_HyPrColoc.txt | awk '{print $1"\t"$2"\t"$3"\t"$4}' )
+	Global_Test=$(tail -n +2 temporary/Global_Test_${output}_${ID}_MR-PRESSO.txt | awk '{print $1}' )
+	Distortion_Test=$(tail -n +2 temporary/Distortion_Test_${output}_${ID}_MR-PRESSO.txt | awk '{print $1}' )
+	Estimate=$(sed '2q;d' temporary/Main_MR_results_${output}_${ID}_MR-PRESSO.txt | awk '{print $3}')
+	P=$(sed '2q;d' temporary/Main_MR_results_${output}_${ID}_MR-PRESSO.txt | awk '{print $6}')
+	Estimate_OC=$(sed '3q;d' temporary/Main_MR_results_${output}_${ID}_MR-PRESSO.txt | awk '{print $3}')
+	P_OC=$(sed '3q;d' temporary/Main_MR_results_${output}_${ID}_MR-PRESSO.txt | awk '{print $6}')
+	echo -e $ID"\t"$IV"\t"$IVW_QQ"\t"$IVW_Estimate"\t"$IVW_P"\t"$Egger_Estimate"\t"$Egger_P"\t"$Egger_P_Intercept"\t"$coloc"\t"$Global_Test"\t"$Estimate"\t"$P"\t"$Estimate_OC"\t"$P_OC"\t"$Distortion_Test >> $output/${output}_summary.txt
+else
+	coloc=$(tail -n +2 temporary/${output}_${ID}_output_HyPrColoc.txt | awk '{print $1"\t"$2"\t"$3"\t"$4}' )
+	echo -e $ID"\t"$IV"\tNA\tNA\tNA\tNA\tNA\tNA\t"$coloc"\tNA\tNA\tNA\tNA\tNA\tNA" >> $output/${output}_summary.txt
+fi
+mv temporary/${output}_${ID}_pot_IVs.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_IVs ;
+mv temporary/${output}_${ID}_log_SNPClip.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_IVs
+mv temporary/${output}_${ID}_rsID_IVs.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_IVs ;
+mv temporary/${output}_${ID}_IVs_GWAS.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_IVs ;
+mv temporary/${output}_${ID}_IVs_eQTLGen.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_IVs ;
+mv temporary/${output}_${ID}_input_HyPrColoc_Beta.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_HyPrColoc ;
+mv temporary/${output}_${ID}_input_HyPrColoc_SE.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_HyPrColoc ;
+mv temporary/${output}_${ID}_output_HyPrColoc.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_HyPrColoc ;
+mv temporary/${output}_${ID}_SNPs temporary/${output}_${ID}_SNPs.txt ;
+mv temporary/${output}_${ID}_MR-PRESSO temporary/${output}_${ID}_MR-PRESSO.txt ;
+mv temporary/${output}_${ID}_SNPs.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR/${output}_${ID}_input_MR.txt ;
+mv temporary/Results_MR_all_methods_${output}_${ID}_SNPs.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR/Results_MR_all_methods_${output}_${ID}.txt ;
+mv temporary/Results_heterogeneity_${output}_${ID}_SNPs.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR/Results_heterogeneity_${output}_${ID}.txt ;
+mv temporary/Plot_${output}_${ID}_SNPs_MR.pdf $output/${output}_files/${output}_${ID}/${output}_${ID}_MR/Plot_${output}_${ID}_IVW.pdf ;
+mv temporary/Plot_${output}_${ID}_SNPs_MR_Egger.pdf $output/${output}_files/${output}_${ID}/${output}_${ID}_MR/Plot_${output}_${ID}_Egger.pdf ;
+mv temporary/Global_Test_${output}_${ID}_MR-PRESSO.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR-PRESSO ;
+mv temporary/Outlier_Test_${output}_${ID}_MR-PRESSO.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR-PRESSO ;
+mv temporary/Distortion_Test_${output}_${ID}_MR-PRESSO.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR-PRESSO ;
+mv temporary/Outliers_Indices_${output}_${ID}_MR-PRESSO.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR-PRESSO ;
+mv temporary/Main_MR_results_${output}_${ID}_MR-PRESSO.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR-PRESSO ;
+mv temporary/${output}_${ID}_MR-PRESSO.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR-PRESSO/${output}_${ID}_input_MR-PRESSO.txt ;
+rm -rf temporary/temp{snps,a,b,c,d,e,f,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33} ;
+echo " "
+echo "=> Analysis for "$ID" completed!"
+done
+rm -rf temporary ;
+echo " "
+echo "==========AMANDE eQTLGen completed=========="
+elif [ $rsID = "rs" ] && [ $exposure = "eqtlgen" ]
+then
+echo " "
+echo "==========AMANDE eQTLGen is launched (rs option)=========="	
+echo " "
+echo "----------Window setting: "$window"kb"
+echo "----------Pvalue pruning IVs: "$pvalue
+echo "----------GWAS: "$GWAS
+echo "----------Output: "$output
+mkdir $output
+mkdir $output/${output}_files
+mkdir temporary
+echo -e "Gene\tIV\tIVW_QQ_P\tIVW_Estimate\tIVW_P\tEgger_Estimate\tEgger_P\tEgger_Intercept_P\tPosterior_prob\tRegional_prob\tCandidate_snp\tPosterior_explained_by_snp\tGlobal_Test_P\tEstimate\tP\tEstimate_Out-Corr\tP_Out-Corr\tDistortion_Test_P" > $output/${output}_summary.txt
+listGenes=$(cat $1)
+for gene in $listGenes
+do
+	info=$(echo $gene | tr "_" "\n")
+	ARR=()
+	for k in $info
+	do
+		ARR+=($k)
+	done
+	ID=${ARR[0]}
+	chr=${ARR[1]}
+	pos=${ARR[2]}
+	echo " "		
+	echo "=> Preparing files for "$ID"..."
+	start=$(($pos-$window*1000))
+	end=$(($pos+$window*1000))
+awk '{ if($8 ~ "'"$ID"'") { print } }' ${eQTLGen}/cis-eQTLs_full_20180905.txt | awk '($4 >= '$start') && ($4 <= '$end')  { print $0} ' | awk '{print $2, $1, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14}' > temporary/temp1
+awk 'FNR==NR{a[$1];next}($1 in a){print $1, $9}' temporary/temp1 ${eQTLGen}/cis-eQTLs_full_MAF.txt > temporary/temp11 ;
+sort -k1,1 temporary/temp1 > temporary/temp4 ;
+sort -k1,1 temporary/temp11 > temporary/temp5 ;
+join temporary/temp4 temporary/temp5 > temporary/temp14 ;
+awk '{print $2, $1, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15}' temporary/temp14 > temporary/temp4 ;
+awk '{print "chr"$3":"$4, $2, $6, $7, $5, $1, 1/(sqrt(2*$15*(1-$15)*($13+$5*$5)));}' temporary/temp4 > temporary/temp5 ;
+awk '{print $1, $2, $3, $4, $5, $6, $7, $5*$7;}' temporary/temp5 > temporary/temp6 ;
+awk '{print $1, $2, $3, $4, $8, $7, $6}' temporary/temp6 > temporary/temp7 ;
+awk '{ if($7 < '$pvalue') { print $1, $2, $3, $4, $5, $6, $7} }' temporary/temp7 > temporary/temp8 ;
+sort -k7 -g temporary/temp8 > temporary/${output}_${ID}_pot_IVs.txt ;
+awk '{print $2}' temporary/${output}_${ID}_pot_IVs.txt > temporary/tempsnps ;
+echo " "
+echo "=> Performing LD pruning for "$ID"..."
+./system/LDlink.R ;
+awk '{print}' temporary/tempa > temporary/${output}_${ID}_log_SNPClip.txt ;
+awk '/kept/' temporary/${output}_${ID}_log_SNPClip.txt > temporary/temp9 ;
+awk '{print $1}' temporary/temp9 > temporary/${output}_${ID}_rsID_IVs.txt ;
+awk 'FNR==NR{a[$1];next}($1 in a){print $1, $2, $3, $4, $5, $6}' temporary/${output}_${ID}_rsID_IVs.txt $GWAS > temporary/temp19 ;
+awk 'FNR==NR{a[$1];next}($2 in a){print $2, $3, $4, $5, $6, $7}' temporary/temp19 temporary/${output}_${ID}_pot_IVs.txt > temporary/temp20 ;
+{ echo 'rsID EA OA Beta se Pvalue'; cat temporary/temp19; } > temporary/${output}_${ID}_IVs_GWAS.txt ;
+{ echo 'rsID EA OA Beta se Pvalue'; cat temporary/temp20; } > temporary/${output}_${ID}_IVs_eQTLGen.txt ;
+sort -k1,1 temporary/temp19 > temporary/temp14 ;
+sort -k1,1 temporary/temp20 > temporary/temp15 ;
+awk 'FILENAME=="temporary/temp15"{A[$1$2]=$1$2}
+FILENAME=="'"temporary/${output}_${ID}_IVs_GWAS.txt"'"{if(A[$1$2]){print $1, $2, $3, $4, $5, $6}}' temporary/temp15 temporary/${output}_${ID}_IVs_GWAS.txt > temporary/temp17 ;
+awk 'FILENAME=="temporary/temp15"{A[$1$2]=$1$2}
+FILENAME=="'"temporary/${output}_${ID}_IVs_GWAS.txt"'"{if(A[$1$3]){print $1, $2, $3, (-$4), $5, $6}}' temporary/temp15 temporary/${output}_${ID}_IVs_GWAS.txt > temporary/temp18 ;
+cat temporary/temp17 temporary/temp18 > temporary/temp20 ;
+sort -k1,1 temporary/temp20 > temporary/temp21 ;
+join temporary/temp15 temporary/temp21 > temporary/temp22 ;
+awk '{print $1, $3, $2, $4, $5, $9, $10}' temporary/temp22 > temporary/temp23 ;
+{ echo 'snps other_allele effect_allele b_eQTL b_eQTLse b_GWAS b_GWASse'; cat temporary/temp23; } > temporary/${output}_${ID}_SNPs ;
+mkdir $output/${output}_files/${output}_${ID} ;
+mkdir $output/${output}_files/${output}_${ID}/${output}_${ID}_IVs ;
+mkdir $output/${output}_files/${output}_${ID}/${output}_${ID}_MR ;
+mkdir $output/${output}_files/${output}_${ID}/${output}_${ID}_HyPrColoc ;
+mkdir $output/${output}_files/${output}_${ID}/${output}_${ID}_MR-PRESSO ;
+echo " "
+echo "=> Performing Mendelian randomization for "$ID"..."
+./system/MR.R ;
+awk 'FNR==NR{a[$2];next}($1 in a){print $1, $2, $3, $4, $5}' temporary/temp7 $GWAS > temporary/temp24 ;
+awk 'FNR==NR{a[$1];next}($2 in a){print $2, $3, $4, $5, $6}' temporary/temp24 temporary/temp7 > temporary/temp25 ;
+awk 'FILENAME=="'"temporary/temp25"'"{A[$1$2]=$1$2}
+FILENAME=="'"temporary/temp24"'"{if(A[$1$2]){print $1, $2, $3, $4, $5}}' temporary/temp25 temporary/temp24 > temporary/tempc ;
+awk 'FILENAME=="'"temporary/temp25"'"{A[$1$2]=$1$2}
+FILENAME=="'"temporary/temp24"'"{if(A[$1$3]){print $1, $2, $3, (-$4), $5}}' temporary/temp25 temporary/temp24 > temporary/tempd ;
+cat temporary/tempc temporary/tempd > temporary/tempe ;
+sort -k1,1 temporary/temp25 > temporary/temp26
+sort -k1,1 temporary/tempe > temporary/tempf
+join temporary/temp26 temporary/tempf > temporary/temp28 ;
+awk '{print $1, $4, $8}' temporary/temp28 > temporary/temp29 ;
+{ echo 'T1 T2'; cat temporary/temp29; } > temporary/${output}_${ID}_input_HyPrColoc_Beta.txt ;
+awk '{print $1, $5, $9}' temporary/temp28 > temporary/temp30 ;
+{ echo 'T1 T2'; cat temporary/temp30; } > temporary/${output}_${ID}_input_HyPrColoc_SE.txt ;
+echo " "
+echo "=> Performing colocalization for "$ID"..."
+./system/HyPrColoc.R
+mv temporary/out_hyprcoloc.txt temporary/${output}_${ID}_output_HyPrColoc.txt
+awk '{print $1, $3, $2, $4, $5, $6, $9, $10, $11}' temporary/temp22 > temporary/tempb ;
+{ echo 'snps other_allele effect_allele E1_Effect E1_se p_E1 Y_Effect Y_se p_Y'; cat temporary/tempb; } > temporary/${output}_${ID}_MR-PRESSO ;
+echo " "
+echo "=> Performing MR-PRESSO for "$ID"..."
+./system/MR-PRESSO.R ;
+IV=$(wc -l temporary/${output}_${ID}_SNPs | awk '{print $1-1}')
+if (($IV >= 3))
+then
+	IVW_QQ=$(tail -n +2 temporary/Results_heterogeneity_${output}_${ID}_SNPs.txt | awk '{print $1}')
+	IVW_Estimate=$(sed '5q;d' temporary/Results_MR_all_methods_${output}_${ID}_SNPs.txt | awk '{print $2}')
+	IVW_P=$(sed '5q;d' temporary/Results_MR_all_methods_${output}_${ID}_SNPs.txt | awk '{print $6}')
+	Egger_Estimate=$(sed '9q;d' temporary/Results_MR_all_methods_${output}_${ID}_SNPs.txt | awk '{print $2}')
+	Egger_P=$(sed '9q;d' temporary/Results_MR_all_methods_${output}_${ID}_SNPs.txt | awk '{print $6}')
+	Egger_P_Intercept=$(sed '10q;d' temporary/Results_MR_all_methods_${output}_${ID}_SNPs.txt | awk '{print $6}')
+	coloc=$(tail -n +2 temporary/${output}_${ID}_output_HyPrColoc.txt | awk '{print $1"\t"$2"\t"$3"\t"$4}' )
+	Global_Test=$(tail -n +2 temporary/Global_Test_${output}_${ID}_MR-PRESSO.txt | awk '{print $1}' )
+	Distortion_Test=$(tail -n +2 temporary/Distortion_Test_${output}_${ID}_MR-PRESSO.txt | awk '{print $1}' )
+	Estimate=$(sed '2q;d' temporary/Main_MR_results_${output}_${ID}_MR-PRESSO.txt | awk '{print $3}')
+	P=$(sed '2q;d' temporary/Main_MR_results_${output}_${ID}_MR-PRESSO.txt | awk '{print $6}')
+	Estimate_OC=$(sed '3q;d' temporary/Main_MR_results_${output}_${ID}_MR-PRESSO.txt | awk '{print $3}')
+	P_OC=$(sed '3q;d' temporary/Main_MR_results_${output}_${ID}_MR-PRESSO.txt | awk '{print $6}')
+	echo -e $ID"\t"$IV"\t"$IVW_QQ"\t"$IVW_Estimate"\t"$IVW_P"\t"$Egger_Estimate"\t"$Egger_P"\t"$Egger_P_Intercept"\t"$coloc"\t"$Global_Test"\t"$Estimate"\t"$P"\t"$Estimate_OC"\t"$P_OC"\t"$Distortion_Test >> $output/${output}_summary.txt
+else
+	coloc=$(tail -n +2 temporary/${output}_${ID}_output_HyPrColoc.txt | awk '{print $1"\t"$2"\t"$3"\t"$4}' )
+	echo -e $ID"\t"$IV"\tNA\tNA\tNA\tNA\tNA\tNA\t"$coloc"\tNA\tNA\tNA\tNA\tNA\tNA" >> $output/${output}_summary.txt
+fi
+mv temporary/${output}_${ID}_pot_IVs.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_IVs ;
+mv temporary/${output}_${ID}_log_SNPClip.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_IVs
+mv temporary/${output}_${ID}_rsID_IVs.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_IVs ;
+mv temporary/${output}_${ID}_IVs_GWAS.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_IVs ;
+mv temporary/${output}_${ID}_IVs_eQTLGen.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_IVs ;
+mv temporary/${output}_${ID}_input_HyPrColoc_Beta.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_HyPrColoc ;
+mv temporary/${output}_${ID}_input_HyPrColoc_SE.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_HyPrColoc ;
+mv temporary/${output}_${ID}_output_HyPrColoc.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_HyPrColoc ;
+mv temporary/${output}_${ID}_SNPs temporary/${output}_${ID}_SNPs.txt ;
+mv temporary/${output}_${ID}_MR-PRESSO temporary/${output}_${ID}_MR-PRESSO.txt ;
+mv temporary/${output}_${ID}_SNPs.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR/${output}_${ID}_input_MR.txt ;
+mv temporary/Results_MR_all_methods_${output}_${ID}_SNPs.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR/Results_MR_all_methods_${output}_${ID}.txt ;
+mv temporary/Results_heterogeneity_${output}_${ID}_SNPs.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR/Results_heterogeneity_${output}_${ID}.txt ;
+mv temporary/Plot_${output}_${ID}_SNPs_MR.pdf $output/${output}_files/${output}_${ID}/${output}_${ID}_MR/Plot_${output}_${ID}_IVW.pdf ;
+mv temporary/Plot_${output}_${ID}_SNPs_MR_Egger.pdf $output/${output}_files/${output}_${ID}/${output}_${ID}_MR/Plot_${output}_${ID}_Egger.pdf ;
+mv temporary/Global_Test_${output}_${ID}_MR-PRESSO.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR-PRESSO ;
+mv temporary/Outlier_Test_${output}_${ID}_MR-PRESSO.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR-PRESSO ;
+mv temporary/Distortion_Test_${output}_${ID}_MR-PRESSO.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR-PRESSO ;
+mv temporary/Outliers_Indices_${output}_${ID}_MR-PRESSO.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR-PRESSO ;
+mv temporary/Main_MR_results_${output}_${ID}_MR-PRESSO.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR-PRESSO ;
+mv temporary/${output}_${ID}_MR-PRESSO.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR-PRESSO/${output}_${ID}_input_MR-PRESSO.txt ;
+rm -rf temporary/temp{snps,a,b,c,d,e,f,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33} ;
+echo " "
+echo "=> Analysis for "$ID" completed!"
+done
+rm -rf temporary ;
+echo " "
+echo "==========AMANDE eQTLGen completed=========="
+elif [ $rsID = "chr" ] && [ $exposure = "gtex" ]
+then
+echo " "
+echo "==========AMANDE GTEx V8 is launched (chr option)=========="	
+echo " "
+mkdir $output
+mkdir temporary
+echo "----------Window setting: "$window"kb"
+echo "----------Pvalue pruning IVs: "$pvalue
+echo "----------GWAS: "$GWAS
+echo "----------Output: "$output
+for tissues in $(ls -p ${GTEx} | grep -v /)
+do
+t=$(echo $tissues | sed 's/GTEx_Analysis_v8_eQTL_all_associations_//g')
+mkdir $output/${output}_${t}
+mkdir $output/${output}_${t}/${output}_genes_${t}
+echo -e "Gene\tIV\tIVW_QQ_P\tIVW_Estimate\tIVW_P\tEgger_Estimate\tEgger_P\tEgger_Intercept_P\tPosterior_prob\tRegional_prob\tCandidate_snp\tPosterior_explained_by_snp\tGlobal_Test_P\tEstimate\tP\tEstimate_Out-Corr\tP_Out-Corr\tDistortion_Test_P" > $output/${output}_${t}/${output}_summary_${t}.txt
+listGenes=$(cat $1)
+for gene in $listGenes
+do
+	info=$(echo $gene | tr "_" "\n")
+	ARR=()
+	for k in $info
+	do
+		ARR+=($k)
+	done
+	ID=${ARR[0]}
+	chr=${ARR[1]}
+	pos=${ARR[2]}
+	echo " "	
+	echo "=> Preparing files for "$ID "("${t}")..."
+	start=$(($pos-$window*1000))
+	end=$(($pos+$window*1000))
+awk '{ if($1 ~ "'"$ID"'") { print } }' ${GTEx}/GTEx_Analysis_v8_eQTL_all_associations_${t}/chr${chr}_GTEx_Analysis_v8_eQTL_all_associations_${t}.txt | awk '($3 >= '$start') && ($3 <= '$end')  { print $0 } ' | awk '{print $2":"$3, $4, $5, $6, $7, $8}' > temporary/temp1 ;
+awk 'FNR==NR{a[$1];next}($1 in a){print $1, $2 }' temporary/temp1 ${snp151}/snp151_build38/rs_chr$chr.txt > temporary/temp2 ;
+while read p
+do
+ IFS=' ' read -r -a array <<< "$p"
+ res="$(grep ${array[0]} temporary/temp1)"
+ echo $res" "${array[1]}
+done < temporary/temp2 > temporary/temp3a ;
+awk 'FNR==NR{a[$7];next}($2 in a){print $2, $1 }' temporary/temp3a ${snp151}/snp151_build37/rs_chr$chr.txt > temporary/temp2a ;
+while read p
+do
+ IFS=' ' read -r -a array <<< "$p"
+ res="$(grep ${array[0]} temporary/temp3a)"
+ echo $res" "${array[1]}
+done < temporary/temp2a > temporary/temp4a ;
+awk '!a[$1]++' temporary/temp4a > temporary/temp4b ;
+awk '{ print $8, $2, $3, $4, $5, $6, $7}' temporary/temp4b > temporary/temp3 ;
+python system/Remove_IN-DEL.py ;
+awk '{ print $1, $7, $2, $3, $4, $5, $6}' temporary/temp4 > temporary/temp5
+awk '{ if($7 < '$pvalue') { print $1, $2, $3, $4, $5, $6, $7} }' temporary/temp5 > temporary/temp6 ;
+sort -k7 -g temporary/temp6 > temporary/${output}_${ID}_${t}_pot_IVs.txt ;
+awk '{print $2}' temporary/${output}_${ID}_${t}_pot_IVs.txt > temporary/tempsnps ;
+echo " "
+echo "=> Performing LD pruning for "$ID "("${t}")..."
+./system/LDlink.R ;
+awk '{print}' temporary/tempa > temporary/${output}_${ID}_${t}_log_SNPClip.txt ;
+awk '/kept/' temporary/${output}_${ID}_${t}_log_SNPClip.txt > temporary/temp9 ;
+awk '{print $2}' temporary/temp9 > temporary/${output}_${ID}_${t}_rsID_IVs.txt ;
+awk 'FNR==NR{a[$1];next}($1 in a){print $1, $2, $3, $4, $5, $6}' temporary/${output}_${ID}_${t}_rsID_IVs.txt $GWAS > temporary/temp19 ;
+awk 'FNR==NR{a[$1];next}($1 in a){print $1, $3, $4, $5, $6, $7}' temporary/temp19 temporary/${output}_${ID}_${t}_pot_IVs.txt > temporary/temp20 ;
+{ echo 'rsID EA OA Beta se Pvalue'; cat temporary/temp19; } > temporary/${output}_${ID}_${t}_IVs_GWAS.txt ;
+{ echo 'rsID EA OA Beta se Pvalue'; cat temporary/temp20; } > temporary/${output}_${ID}_${t}_IVs_GTEx.txt ;
+sort -k1,1 temporary/temp19 > temporary/temp14 ;
+sort -k1,1 temporary/temp20 > temporary/temp15 ;
+awk 'FILENAME=="temporary/temp15"{A[$1$2]=$1$2}
+FILENAME=="'"temporary/${output}_${ID}_${t}_IVs_GWAS.txt"'"{if(A[$1$2]){print $1, $2, $3, $4, $5, $6}}' temporary/temp15 temporary/${output}_${ID}_${t}_IVs_GWAS.txt > temporary/temp17 ;
+awk 'FILENAME=="temporary/temp15"{A[$1$2]=$1$2}
+FILENAME=="'"temporary/${output}_${ID}_${t}_IVs_GWAS.txt"'"{if(A[$1$3]){print $1, $2, $3, (-$4), $5, $6}}' temporary/temp15 temporary/${output}_${ID}_${t}_IVs_GWAS.txt > temporary/temp18 ;
+cat temporary/temp17 temporary/temp18 > temporary/temp20 ;
+sort -k1,1 temporary/temp20 > temporary/temp21 ;
+join temporary/temp15 temporary/temp21 > temporary/temp22 ;
+awk '{print $1, $3, $2, $4, $5, $9, $10}' temporary/temp22 > temporary/temp23 ;
+{ echo 'snps other_allele effect_allele b_eQTL b_eQTLse b_GWAS b_GWASse'; cat temporary/temp23; } > temporary/${output}_${ID}_${t}_SNPs ;
+mkdir $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t} ;
+mkdir $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_IVs ;
+mkdir $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_MR ;
+mkdir $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_HyPrColoc ;
+mkdir $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_MR-PRESSO ;
+echo " "
+echo "=> Performing Mendelian randomization for "$ID "("${t}")..."
+./system/MR.R ;
+awk 'FNR==NR{a[$1];next}($1 in a){print $1, $2, $3, $4, $5}' temporary/temp5 $GWAS > temporary/temp24 ;
+awk 'FNR==NR{a[$1];next}($1 in a){print $1, $3, $4, $5, $6}' temporary/temp24 temporary/temp5 > temporary/temp25 ;
+awk 'FILENAME=="'"temporary/temp25"'"{A[$1$2]=$1$2}
+FILENAME=="'"temporary/temp24"'"{if(A[$1$2]){print $1, $2, $3, $4, $5}}' temporary/temp25 temporary/temp24 > temporary/tempc ;
+awk 'FILENAME=="'"temporary/temp25"'"{A[$1$2]=$1$2}
+FILENAME=="'"temporary/temp24"'"{if(A[$1$3]){print $1, $2, $3, (-$4), $5}}' temporary/temp25 temporary/temp24 > temporary/tempd ;
+cat temporary/tempc temporary/tempd > temporary/tempe ;
+sort -k1,1 temporary/temp25 > temporary/temp26
+sort -k1,1 temporary/tempe > temporary/tempf
+join temporary/temp26 temporary/tempf > temporary/temp28 ;
+awk '{print $1, $4, $8}' temporary/temp28 > temporary/temp29 ;
+{ echo 'T1 T2'; cat temporary/temp29; } > temporary/${output}_${ID}_${t}_input_HyPrColoc_Beta.txt ;
+awk '{print $1, $5, $9}' temporary/temp28 > temporary/temp30 ;
+{ echo 'T1 T2'; cat temporary/temp30; } > temporary/${output}_${ID}_${t}_input_HyPrColoc_SE.txt ;
+echo " "
+echo "=> Performing colocalization for "$ID "("${t}")..."
+./system/HyPrColoc.R
+mv temporary/out_hyprcoloc.txt temporary/${output}_${ID}_${t}_output_HyPrColoc.txt
+awk '{print $1, $3, $2, $4, $5, $6, $9, $10, $11}' temporary/temp22 > temporary/tempb ;
+{ echo 'snps other_allele effect_allele E1_Effect E1_se p_E1 Y_Effect Y_se p_Y'; cat temporary/tempb; } > temporary/${output}_${ID}_${t}_MR-PRESSO ;
+echo " "
+echo "=> Performing MR-PRESSO for "$ID "("${t}")..."
+./system/MR-PRESSO.R ;
+IV=$(wc -l temporary/${output}_${ID}_${t}_SNPs | awk '{print $1-1}')
+if (($IV >= 3))
+then
+	IVW_QQ=$(tail -n +2 temporary/Results_heterogeneity_${output}_${ID}_${t}_SNPs.txt | awk '{print $1}')
+	IVW_Estimate=$(sed '5q;d' temporary/Results_MR_all_methods_${output}_${ID}_${t}_SNPs.txt | awk '{print $2}')
+	IVW_P=$(sed '5q;d' temporary/Results_MR_all_methods_${output}_${ID}_${t}_SNPs.txt | awk '{print $6}')
+	Egger_Estimate=$(sed '9q;d' temporary/Results_MR_all_methods_${output}_${ID}_${t}_SNPs.txt | awk '{print $2}')
+	Egger_P=$(sed '9q;d' temporary/Results_MR_all_methods_${output}_${ID}_${t}_SNPs.txt | awk '{print $6}')
+	Egger_P_Intercept=$(sed '10q;d' temporary/Results_MR_all_methods_${output}_${ID}_${t}_SNPs.txt | awk '{print $6}')
+	coloc=$(tail -n +2 temporary/${output}_${ID}_${t}_output_HyPrColoc.txt | awk '{print $1"\t"$2"\t"$3"\t"$4}' )
+	Global_Test=$(tail -n +2 temporary/Global_Test_${output}_${ID}_${t}_MR-PRESSO.txt | awk '{print $1}' )
+	Distortion_Test=$(tail -n +2 temporary/Distortion_Test_${output}_${ID}_${t}_MR-PRESSO.txt | awk '{print $1}' )
+	Estimate=$(sed '2q;d' temporary/Main_MR_results_${output}_${ID}_${t}_MR-PRESSO.txt | awk '{print $3}')
+	P=$(sed '2q;d' temporary/Main_MR_results_${output}_${ID}_${t}_MR-PRESSO.txt | awk '{print $6}')
+	Estimate_OC=$(sed '3q;d' temporary/Main_MR_results_${output}_${ID}_${t}_MR-PRESSO.txt | awk '{print $3}')
+	P_OC=$(sed '3q;d' temporary/Main_MR_results_${output}_${ID}_${t}_MR-PRESSO.txt | awk '{print $6}')
+	echo -e $ID"\t"$IV"\t"$IVW_QQ"\t"$IVW_Estimate"\t"$IVW_P"\t"$Egger_Estimate"\t"$Egger_P"\t"$Egger_P_Intercept"\t"$coloc"\t"$Global_Test"\t"$Estimate"\t"$P"\t"$Estimate_OC"\t"$P_OC"\t"$Distortion_Test >> $output/${output}_${t}/${output}_summary_${t}.txt
+else
+	coloc=$(tail -n +2 temporary/${output}_${ID}_${t}_output_HyPrColoc.txt | awk '{print $1"\t"$2"\t"$3"\t"$4}' )
+	echo -e $ID"\t"$IV"\tNA\tNA\tNA\tNA\tNA\tNA\t"$coloc"\tNA\tNA\tNA\tNA\tNA\tNA" >> $output/${output}_${t}/${output}_summary_${t}.txt
+fi
+mv temporary/${output}_${ID}_${t}_pot_IVs.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_IVs ;
+mv temporary/${output}_${ID}_${t}_log_SNPClip.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_IVs
+mv temporary/${output}_${ID}_${t}_rsID_IVs.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_IVs ;
+mv temporary/${output}_${ID}_${t}_IVs_GWAS.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_IVs ;
+mv temporary/${output}_${ID}_${t}_IVs_GTEx.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_IVs ;
+mv temporary/${output}_${ID}_${t}_input_HyPrColoc_Beta.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_HyPrColoc ;
+mv temporary/${output}_${ID}_${t}_input_HyPrColoc_SE.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_HyPrColoc ;
+mv temporary/${output}_${ID}_${t}_output_HyPrColoc.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_HyPrColoc ;
+mv temporary/${output}_${ID}_${t}_SNPs temporary/${output}_${ID}_${t}_SNPs.txt ;
+mv temporary/${output}_${ID}_${t}_MR-PRESSO temporary/${output}_${ID}_${t}_MR-PRESSO.txt ;
+mv temporary/${output}_${ID}_${t}_SNPs.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_MR/${output}_${ID}_${t}_input_MR.txt ;
+mv temporary/Results_MR_all_methods_${output}_${ID}_${t}_SNPs.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_MR/Results_MR_all_methods_${output}_${ID}.txt ;
+mv temporary/Results_heterogeneity_${output}_${ID}_${t}_SNPs.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_MR/Results_heterogeneity_${output}_${ID}.txt ;
+mv temporary/Plot_${output}_${ID}_${t}_SNPs_MR.pdf $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_MR/Plot_${output}_${ID}_${t}_IVW.pdf ;
+mv temporary/Plot_${output}_${ID}_${t}_SNPs_MR_Egger.pdf $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_MR/Plot_${output}_${ID}_${t}_Egger.pdf ;
+mv temporary/Global_Test_${output}_${ID}_${t}_MR-PRESSO.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_MR-PRESSO ;
+mv temporary/Outlier_Test_${output}_${ID}_${t}_MR-PRESSO.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_MR-PRESSO ;
+mv temporary/Distortion_Test_${output}_${ID}_${t}_MR-PRESSO.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_MR-PRESSO ;
+mv temporary/Outliers_Indices_${output}_${ID}_${t}_MR-PRESSO.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_MR-PRESSO ;
+mv temporary/Main_MR_results_${output}_${ID}_${t}_MR-PRESSO.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_MR-PRESSO ;
+mv temporary/${output}_${ID}_${t}_MR-PRESSO.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_MR-PRESSO/${output}_${ID}_${t}_input_MR-PRESSO.txt ;
+rm -rf temporary/temp{snps,a,b,c,d,e,f,2a,3a,4a,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33} ;
+echo " "
+echo "=> Analysis for "$ID "("${t}") completed!"
+done
+done
+rm -rf temporary ;
+echo " "
+echo "==========AMANDE GTEx V8 completed=========="
+elif [ $rsID = "rs" ] && [ $exposure = "gtex" ]
+then
+echo " "
+echo "==========AMANDE GTEx V8 is launched (rs option)=========="	
+echo " "
+mkdir $output
+mkdir temporary
+echo "----------Window setting: "$window"kb"
+echo "----------Pvalue pruning IVs: "$pvalue
+echo "----------GWAS: "$GWAS
+echo "----------Output: "$output
+for tissues in $(ls -p ${GTEx} | grep -v /)
+do
+t=$(echo $tissues | sed 's/GTEx_Analysis_v8_eQTL_all_associations_//g')
+mkdir $output/${output}_${t}
+mkdir $output/${output}_${t}/${output}_genes_${t}
+echo -e "Gene\tIV\tIVW_QQ_P\tIVW_Estimate\tIVW_P\tEgger_Estimate\tEgger_P\tEgger_Intercept_P\tPosterior_prob\tRegional_prob\tCandidate_snp\tPosterior_explained_by_snp\tGlobal_Test_P\tEstimate\tP\tEstimate_Out-Corr\tP_Out-Corr\tDistortion_Test_P" > $output/${output}_${t}/${output}_summary_${t}.txt
+listGenes=$(cat $1)
+for gene in $listGenes
+do
+	info=$(echo $gene | tr "_" "\n")
+	ARR=()
+	for k in $info
+	do
+		ARR+=($k)
+	done
+	ID=${ARR[0]}
+	chr=${ARR[1]}
+	pos=${ARR[2]}
+	echo " "	
+	echo "=> Preparing files for "$ID "("${t}")..."
+	start=$(($pos-$window*1000))
+	end=$(($pos+$window*1000))
+awk '{ if($1 ~ "'"$ID"'") { print } }' ${GTEx}/GTEx_Analysis_v8_eQTL_all_associations_${t}/chr${chr}_GTEx_Analysis_v8_eQTL_all_associations_${t}.txt | awk '($3 >= '$start') && ($3 <= '$end')  { print $0 } ' | awk '{print $2":"$3, $4, $5, $6, $7, $8}' > temporary/temp1 ;
+awk 'FNR==NR{a[$1];next}($1 in a){print $1, $2 }' temporary/temp1 ${snp151}/snp151_build38/rs_chr$chr.txt > temporary/temp2 ;
+while read p
+do
+ IFS=' ' read -r -a array <<< "$p"
+ res="$(grep ${array[0]} temporary/temp1)"
+ echo $res" "${array[1]}
+done < temporary/temp2 > temporary/temp3 ;
+python system/Remove_IN-DEL.py ;
+awk '{ print $1, $7, $2, $3, $4, $5, $6}' temporary/temp4 > temporary/temp5
+awk '{ if($7 < '$pvalue') { print $1, $2, $3, $4, $5, $6, $7} }' temporary/temp5 > temporary/temp6 ;
+sort -k7 -g temporary/temp6 > temporary/${output}_${ID}_${t}_pot_IVs.txt ;
+awk '{print $2}' temporary/${output}_${ID}_${t}_pot_IVs.txt > temporary/tempsnps ;
+echo " "
+echo "=> Performing LD pruning for "$ID "("${t}")..."
+./system/LDlink.R ;
+awk '{print}' temporary/tempa > temporary/${output}_${ID}_${t}_log_SNPClip.txt ;
+awk '/kept/' temporary/${output}_${ID}_${t}_log_SNPClip.txt > temporary/temp9 ;
+awk '{print $1}' temporary/temp9 > temporary/${output}_${ID}_${t}_rsID_IVs.txt ;
+awk 'FNR==NR{a[$1];next}($1 in a){print $1, $2, $3, $4, $5, $6}' temporary/${output}_${ID}_${t}_rsID_IVs.txt $GWAS > temporary/temp19 ;
+awk 'FNR==NR{a[$1];next}($2 in a){print $2, $3, $4, $5, $6, $7}' temporary/temp19 temporary/${output}_${ID}_${t}_pot_IVs.txt > temporary/temp20 ;
+{ echo 'rsID EA OA Beta se Pvalue'; cat temporary/temp19; } > temporary/${output}_${ID}_${t}_IVs_GWAS.txt ;
+{ echo 'rsID EA OA Beta se Pvalue'; cat temporary/temp20; } > temporary/${output}_${ID}_${t}_IVs_GTEx.txt ;
+sort -k1,1 temporary/temp19 > temporary/temp14 ;
+sort -k1,1 temporary/temp20 > temporary/temp15 ;
+awk 'FILENAME=="temporary/temp15"{A[$1$2]=$1$2}
+FILENAME=="'"temporary/${output}_${ID}_${t}_IVs_GWAS.txt"'"{if(A[$1$2]){print $1, $2, $3, $4, $5, $6}}' temporary/temp15 temporary/${output}_${ID}_${t}_IVs_GWAS.txt > temporary/temp17 ;
+awk 'FILENAME=="temporary/temp15"{A[$1$2]=$1$2}
+FILENAME=="'"temporary/${output}_${ID}_${t}_IVs_GWAS.txt"'"{if(A[$1$3]){print $1, $2, $3, (-$4), $5, $6}}' temporary/temp15 temporary/${output}_${ID}_${t}_IVs_GWAS.txt > temporary/temp18 ;
+cat temporary/temp17 temporary/temp18 > temporary/temp20 ;
+sort -k1,1 temporary/temp20 > temporary/temp21 ;
+join temporary/temp15 temporary/temp21 > temporary/temp22 ;
+awk '{print $1, $3, $2, $4, $5, $9, $10}' temporary/temp22 > temporary/temp23 ;
+{ echo 'snps other_allele effect_allele b_eQTL b_eQTLse b_GWAS b_GWASse'; cat temporary/temp23; } > temporary/${output}_${ID}_${t}_SNPs ;
+mkdir $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t} ;
+mkdir $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_IVs ;
+mkdir $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_MR ;
+mkdir $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_HyPrColoc ;
+mkdir $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_MR-PRESSO ;
+echo " "
+echo "=> Performing Mendelian randomization for "$ID "("${t}")..."
+./system/MR.R ;
+awk 'FNR==NR{a[$2];next}($1 in a){print $1, $2, $3, $4, $5}' temporary/temp5 $GWAS > temporary/temp24 ;
+awk 'FNR==NR{a[$1];next}($2 in a){print $2, $3, $4, $5, $6}' temporary/temp24 temporary/temp5 > temporary/temp25 ;
+awk 'FILENAME=="'"temporary/temp25"'"{A[$1$2]=$1$2}
+FILENAME=="'"temporary/temp24"'"{if(A[$1$2]){print $1, $2, $3, $4, $5}}' temporary/temp25 temporary/temp24 > temporary/tempc ;
+awk 'FILENAME=="'"temporary/temp25"'"{A[$1$2]=$1$2}
+FILENAME=="'"temporary/temp24"'"{if(A[$1$3]){print $1, $2, $3, (-$4), $5}}' temporary/temp25 temporary/temp24 > temporary/tempd ;
+cat temporary/tempc temporary/tempd > temporary/tempe ;
+sort -k1,1 temporary/temp25 > temporary/temp26
+sort -k1,1 temporary/tempe > temporary/tempf
+join temporary/temp26 temporary/tempf > temporary/temp28 ;
+awk '{print $1, $4, $8}' temporary/temp28 > temporary/temp29 ;
+{ echo 'T1 T2'; cat temporary/temp29; } > temporary/${output}_${ID}_${t}_input_HyPrColoc_Beta.txt ;
+awk '{print $1, $5, $9}' temporary/temp28 > temporary/temp30 ;
+{ echo 'T1 T2'; cat temporary/temp30; } > temporary/${output}_${ID}_${t}_input_HyPrColoc_SE.txt ;
+echo " "
+echo "=> Performing colocalization for "$ID "("${t}")..."
+./system/HyPrColoc.R
+mv temporary/out_hyprcoloc.txt temporary/${output}_${ID}_${t}_output_HyPrColoc.txt
+awk '{print $1, $3, $2, $4, $5, $6, $9, $10, $11}' temporary/temp22 > temporary/tempb ;
+{ echo 'snps other_allele effect_allele E1_Effect E1_se p_E1 Y_Effect Y_se p_Y'; cat temporary/tempb; } > temporary/${output}_${ID}_${t}_MR-PRESSO ;
+echo " "
+echo "=> Performing MR-PRESSO for "$ID "("${t}")..."
+./system/MR-PRESSO.R ;
+IV=$(wc -l temporary/${output}_${ID}_${t}_SNPs | awk '{print $1-1}')
+if (($IV >= 3))
+then
+	IVW_QQ=$(tail -n +2 temporary/Results_heterogeneity_${output}_${ID}_${t}_SNPs.txt | awk '{print $1}')
+	IVW_Estimate=$(sed '5q;d' temporary/Results_MR_all_methods_${output}_${ID}_${t}_SNPs.txt | awk '{print $2}')
+	IVW_P=$(sed '5q;d' temporary/Results_MR_all_methods_${output}_${ID}_${t}_SNPs.txt | awk '{print $6}')
+	Egger_Estimate=$(sed '9q;d' temporary/Results_MR_all_methods_${output}_${ID}_${t}_SNPs.txt | awk '{print $2}')
+	Egger_P=$(sed '9q;d' temporary/Results_MR_all_methods_${output}_${ID}_${t}_SNPs.txt | awk '{print $6}')
+	Egger_P_Intercept=$(sed '10q;d' temporary/Results_MR_all_methods_${output}_${ID}_${t}_SNPs.txt | awk '{print $6}')
+	coloc=$(tail -n +2 temporary/${output}_${ID}_${t}_output_HyPrColoc.txt | awk '{print $1"\t"$2"\t"$3"\t"$4}' )
+	Global_Test=$(tail -n +2 temporary/Global_Test_${output}_${ID}_${t}_MR-PRESSO.txt | awk '{print $1}' )
+	Distortion_Test=$(tail -n +2 temporary/Distortion_Test_${output}_${ID}_${t}_MR-PRESSO.txt | awk '{print $1}' )
+	Estimate=$(sed '2q;d' temporary/Main_MR_results_${output}_${ID}_${t}_MR-PRESSO.txt | awk '{print $3}')
+	P=$(sed '2q;d' temporary/Main_MR_results_${output}_${ID}_${t}_MR-PRESSO.txt | awk '{print $6}')
+	Estimate_OC=$(sed '3q;d' temporary/Main_MR_results_${output}_${ID}_${t}_MR-PRESSO.txt | awk '{print $3}')
+	P_OC=$(sed '3q;d' temporary/Main_MR_results_${output}_${ID}_${t}_MR-PRESSO.txt | awk '{print $6}')
+	echo -e $ID"\t"$IV"\t"$IVW_QQ"\t"$IVW_Estimate"\t"$IVW_P"\t"$Egger_Estimate"\t"$Egger_P"\t"$Egger_P_Intercept"\t"$coloc"\t"$Global_Test"\t"$Estimate"\t"$P"\t"$Estimate_OC"\t"$P_OC"\t"$Distortion_Test >> $output/${output}_${t}/${output}_summary_${t}.txt
+else
+	coloc=$(tail -n +2 temporary/${output}_${ID}_${t}_output_HyPrColoc.txt | awk '{print $1"\t"$2"\t"$3"\t"$4}' )
+	echo -e $ID"\t"$IV"\tNA\tNA\tNA\tNA\tNA\tNA\t"$coloc"\tNA\tNA\tNA\tNA\tNA\tNA" >> $output/${output}_${t}/${output}_summary_${t}.txt
+fi
+mv temporary/${output}_${ID}_${t}_pot_IVs.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_IVs ;
+mv temporary/${output}_${ID}_${t}_log_SNPClip.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_IVs
+mv temporary/${output}_${ID}_${t}_rsID_IVs.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_IVs ;
+mv temporary/${output}_${ID}_${t}_IVs_GWAS.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_IVs ;
+mv temporary/${output}_${ID}_${t}_IVs_GTEx.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_IVs ;
+mv temporary/${output}_${ID}_${t}_input_HyPrColoc_Beta.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_HyPrColoc ;
+mv temporary/${output}_${ID}_${t}_input_HyPrColoc_SE.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_HyPrColoc ;
+mv temporary/${output}_${ID}_${t}_output_HyPrColoc.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_HyPrColoc ;
+mv temporary/${output}_${ID}_${t}_SNPs temporary/${output}_${ID}_${t}_SNPs.txt ;
+mv temporary/${output}_${ID}_${t}_MR-PRESSO temporary/${output}_${ID}_${t}_MR-PRESSO.txt ;
+mv temporary/${output}_${ID}_${t}_SNPs.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_MR/${output}_${ID}_${t}_input_MR.txt ;
+mv temporary/Results_MR_all_methods_${output}_${ID}_${t}_SNPs.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_MR/Results_MR_all_methods_${output}_${ID}.txt ;
+mv temporary/Results_heterogeneity_${output}_${ID}_${t}_SNPs.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_MR/Results_heterogeneity_${output}_${ID}.txt ;
+mv temporary/Plot_${output}_${ID}_${t}_SNPs_MR.pdf $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_MR/Plot_${output}_${ID}_${t}_IVW.pdf ;
+mv temporary/Plot_${output}_${ID}_${t}_SNPs_MR_Egger.pdf $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_MR/Plot_${output}_${ID}_${t}_Egger.pdf ;
+mv temporary/Global_Test_${output}_${ID}_${t}_MR-PRESSO.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_MR-PRESSO ;
+mv temporary/Outlier_Test_${output}_${ID}_${t}_MR-PRESSO.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_MR-PRESSO ;
+mv temporary/Distortion_Test_${output}_${ID}_${t}_MR-PRESSO.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_MR-PRESSO ;
+mv temporary/Outliers_Indices_${output}_${ID}_${t}_MR-PRESSO.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_MR-PRESSO ;
+mv temporary/Main_MR_results_${output}_${ID}_${t}_MR-PRESSO.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_MR-PRESSO ;
+mv temporary/${output}_${ID}_${t}_MR-PRESSO.txt $output/${output}_${t}/${output}_genes_${t}/${output}_${ID}_${t}/${output}_${ID}_${t}_MR-PRESSO/${output}_${ID}_${t}_input_MR-PRESSO.txt ;
+rm -rf temporary/temp{snps,a,b,c,d,e,f,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33} ;
+echo " "
+echo "=> Analysis for "$ID "("${t}") completed!"
+done
+done
+rm -rf temporary ;
+echo " "
+echo "==========AMANDE GTEx V8 completed=========="
+elif [ $rsID = "rs" ] && [ $exposure = "interval" ]
+then
+echo " "
+echo "==========AMANDE INTERVAL is launched (rs option)=========="	
+echo " "
+echo "----------Window setting: "$window"kb"
+echo "----------Pvalue pruning IVs: "$pvalue
+echo "----------GWAS: "$GWAS
+echo "----------Output: "$output
+mkdir $output
+mkdir $output/${output}_files
+mkdir temporary
+echo -e "Gene\tIV\tIVW_QQ_P\tIVW_Estimate\tIVW_P\tEgger_Estimate\tEgger_P\tEgger_Intercept_P\tPosterior_prob\tRegional_prob\tCandidate_snp\tPosterior_explained_by_snp\tGlobal_Test_P\tEstimate\tP\tEstimate_Out-Corr\tP_Out-Corr\tDistortion_Test_P" > $output/${output}_summary.txt
+listGenes=$(cat $1)
+for gene in $listGenes
+do
+	info=$(echo $gene | tr "_" "\n")
+	ARR=()
+	for k in $info
+	do
+		ARR+=($k)
+	done
+	ID=${ARR[0]}
+	chr=${ARR[1]}
+	pos=${ARR[2]}
+	echo " "		
+	echo "=> Preparing files for "$ID"..."
+	start=$(($pos-$window*1000))
+	end=$(($pos+$window*1000))
+awk '($3 >= '$start') && ($3 <= '$end')  { print $0 } ' ${INTERVAL}/${ID}/${ID}_chrom_${chr}_* | awk '{print "chr"$2":"$3, toupper($4), toupper($5), $6, $7, 10^$8}' > temporary/temp1 ;
+awk 'FNR==NR{a[$1];next}($1 in a){print $1, $2 }' temporary/temp1 ${snp151}/snp151_build37/rs_chr$chr.txt > temporary/temp2 ;
+while read p
+do
+ IFS=' ' read -r -a array <<< "$p"
+ res="$(grep ${array[0]} temporary/temp1)"
+ echo $res" "${array[1]}
+done < temporary/temp2 > temporary/temp3a ;
+awk '{ print $7, $1, $2, $3, $4, $5, $6}' temporary/temp3a > temporary/temp4 ;
+awk '{ if($7 < '$pvalue') { print $1, $2, $3, $4, $5, $6, $7} }' temporary/temp4 > temporary/temp8 ;
+sort -k7 -g temporary/temp8 > temporary/${output}_${ID}_pot_IVs.txt ;
+awk '{print $1}' temporary/${output}_${ID}_pot_IVs.txt > temporary/tempsnps ;
+echo " "
+echo "=> Performing LD pruning for "$ID"..."
+./system/LDlink.R ;
+awk '{print}' temporary/tempa > temporary/${output}_${ID}_log_SNPClip.txt ;
+awk '/kept/' temporary/${output}_${ID}_log_SNPClip.txt > temporary/temp9 ;
+awk '{print $1}' temporary/temp9 > temporary/${output}_${ID}_rsID_IVs.txt ;
+awk 'FNR==NR{a[$1];next}($1 in a){print $1, $2, $3, $4, $5, $6}' temporary/${output}_${ID}_rsID_IVs.txt $GWAS > temporary/temp19 ;
+awk 'FNR==NR{a[$1];next}($1 in a){print $1, $3, $4, $5, $6, $7}' temporary/temp19 temporary/${output}_${ID}_pot_IVs.txt > temporary/temp20 ;
+{ echo 'rsID EA OA Beta se Pvalue'; cat temporary/temp19; } > temporary/${output}_${ID}_IVs_GWAS.txt ;
+{ echo 'rsID EA OA Beta se Pvalue'; cat temporary/temp20; } > temporary/${output}_${ID}_IVs_INTERVAL.txt ;
+sort -k1,1 temporary/temp19 > temporary/temp14 ;
+sort -k1,1 temporary/temp20 > temporary/temp15 ;
+awk 'FILENAME=="temporary/temp15"{A[$1$2]=$1$2}
+FILENAME=="'"temporary/${output}_${ID}_IVs_GWAS.txt"'"{if(A[$1$2]){print $1, $2, $3, $4, $5, $6}}' temporary/temp15 temporary/${output}_${ID}_IVs_GWAS.txt > temporary/temp17 ;
+awk 'FILENAME=="temporary/temp15"{A[$1$2]=$1$2}
+FILENAME=="'"temporary/${output}_${ID}_IVs_GWAS.txt"'"{if(A[$1$3]){print $1, $2, $3, (-$4), $5, $6}}' temporary/temp15 temporary/${output}_${ID}_IVs_GWAS.txt > temporary/temp18 ;
+cat temporary/temp17 temporary/temp18 > temporary/temp20 ;
+sort -k1,1 temporary/temp20 > temporary/temp21 ;
+join temporary/temp15 temporary/temp21 > temporary/temp22 ;
+awk '{print $1, $3, $2, $4, $5, $9, $10}' temporary/temp22 > temporary/temp23 ;
+{ echo 'snps other_allele effect_allele b_eQTL b_eQTLse b_GWAS b_GWASse'; cat temporary/temp23; } > temporary/${output}_${ID}_SNPs ;
+mkdir $output/${output}_files/${output}_${ID} ;
+mkdir $output/${output}_files/${output}_${ID}/${output}_${ID}_IVs ;
+mkdir $output/${output}_files/${output}_${ID}/${output}_${ID}_MR ;
+mkdir $output/${output}_files/${output}_${ID}/${output}_${ID}_HyPrColoc ;
+mkdir $output/${output}_files/${output}_${ID}/${output}_${ID}_MR-PRESSO ;
+echo " "
+echo "=> Performing Mendelian randomization for "$ID"..."
+./system/MR.R ;
+awk 'FNR==NR{a[$1];next}($1 in a){print $1, $2, $3, $4, $5}' temporary/temp4 $GWAS > temporary/temp24 ;
+awk 'FNR==NR{a[$1];next}($1 in a){print $1, $3, $4, $5, $6}' temporary/temp24 temporary/temp4 > temporary/temp25 ;
+awk 'FILENAME=="'"temporary/temp25"'"{A[$1$2]=$1$2}
+FILENAME=="'"temporary/temp24"'"{if(A[$1$2]){print $1, $2, $3, $4, $5}}' temporary/temp25 temporary/temp24 > temporary/tempc ;
+awk 'FILENAME=="'"temporary/temp25"'"{A[$1$2]=$1$2}
+FILENAME=="'"temporary/temp24"'"{if(A[$1$3]){print $1, $2, $3, (-$4), $5}}' temporary/temp25 temporary/temp24 > temporary/tempd ;
+cat temporary/tempc temporary/tempd > temporary/tempe ;
+sort -k1,1 temporary/temp25 > temporary/temp26
+sort -k1,1 temporary/tempe > temporary/tempf
+join temporary/temp26 temporary/tempf > temporary/temp28 ;
+awk '{print $1, $4, $8}' temporary/temp28 > temporary/temp29 ;
+{ echo 'T1 T2'; cat temporary/temp29; } > temporary/${output}_${ID}_input_HyPrColoc_Beta.txt ;
+awk '{print $1, $5, $9}' temporary/temp28 > temporary/temp30 ;
+{ echo 'T1 T2'; cat temporary/temp30; } > temporary/${output}_${ID}_input_HyPrColoc_SE.txt ;
+echo " "
+echo "=> Performing colocalization for "$ID"..."
+./system/HyPrColoc.R
+mv temporary/out_hyprcoloc.txt temporary/${output}_${ID}_output_HyPrColoc.txt
+awk '{print $1, $3, $2, $4, $5, $6, $9, $10, $11}' temporary/temp22 > temporary/tempb ;
+{ echo 'snps other_allele effect_allele E1_Effect E1_se p_E1 Y_Effect Y_se p_Y'; cat temporary/tempb; } > temporary/${output}_${ID}_MR-PRESSO ;
+echo " "
+echo "=> Performing MR-PRESSO for "$ID"..."
+./system/MR-PRESSO.R ;
+IV=$(wc -l temporary/${output}_${ID}_SNPs | awk '{print $1-1}')
+if (($IV >= 3))
+then
+	IVW_QQ=$(tail -n +2 temporary/Results_heterogeneity_${output}_${ID}_SNPs.txt | awk '{print $1}')
+	IVW_Estimate=$(sed '5q;d' temporary/Results_MR_all_methods_${output}_${ID}_SNPs.txt | awk '{print $2}')
+	IVW_P=$(sed '5q;d' temporary/Results_MR_all_methods_${output}_${ID}_SNPs.txt | awk '{print $6}')
+	Egger_Estimate=$(sed '9q;d' temporary/Results_MR_all_methods_${output}_${ID}_SNPs.txt | awk '{print $2}')
+	Egger_P=$(sed '9q;d' temporary/Results_MR_all_methods_${output}_${ID}_SNPs.txt | awk '{print $6}')
+	Egger_P_Intercept=$(sed '10q;d' temporary/Results_MR_all_methods_${output}_${ID}_SNPs.txt | awk '{print $6}')
+	coloc=$(tail -n +2 temporary/${output}_${ID}_output_HyPrColoc.txt | awk '{print $1"\t"$2"\t"$3"\t"$4}' )
+	Global_Test=$(tail -n +2 temporary/Global_Test_${output}_${ID}_MR-PRESSO.txt | awk '{print $1}' )
+	Distortion_Test=$(tail -n +2 temporary/Distortion_Test_${output}_${ID}_MR-PRESSO.txt | awk '{print $1}' )
+	Estimate=$(sed '2q;d' temporary/Main_MR_results_${output}_${ID}_MR-PRESSO.txt | awk '{print $3}')
+	P=$(sed '2q;d' temporary/Main_MR_results_${output}_${ID}_MR-PRESSO.txt | awk '{print $6}')
+	Estimate_OC=$(sed '3q;d' temporary/Main_MR_results_${output}_${ID}_MR-PRESSO.txt | awk '{print $3}')
+	P_OC=$(sed '3q;d' temporary/Main_MR_results_${output}_${ID}_MR-PRESSO.txt | awk '{print $6}')
+	echo -e $ID"\t"$IV"\t"$IVW_QQ"\t"$IVW_Estimate"\t"$IVW_P"\t"$Egger_Estimate"\t"$Egger_P"\t"$Egger_P_Intercept"\t"$coloc"\t"$Global_Test"\t"$Estimate"\t"$P"\t"$Estimate_OC"\t"$P_OC"\t"$Distortion_Test >> $output/${output}_summary.txt
+else
+	coloc=$(tail -n +2 temporary/${output}_${ID}_output_HyPrColoc.txt | awk '{print $1"\t"$2"\t"$3"\t"$4}' )
+	echo -e $ID"\t"$IV"\tNA\tNA\tNA\tNA\tNA\tNA\t"$coloc"\tNA\tNA\tNA\tNA\tNA\tNA" >> $output/${output}_summary.txt
+fi
+mv temporary/${output}_${ID}_pot_IVs.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_IVs ;
+mv temporary/${output}_${ID}_log_SNPClip.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_IVs
+mv temporary/${output}_${ID}_rsID_IVs.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_IVs ;
+mv temporary/${output}_${ID}_IVs_GWAS.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_IVs ;
+mv temporary/${output}_${ID}_IVs_INTERVAL.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_IVs ;
+mv temporary/${output}_${ID}_input_HyPrColoc_Beta.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_HyPrColoc ;
+mv temporary/${output}_${ID}_input_HyPrColoc_SE.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_HyPrColoc ;
+mv temporary/${output}_${ID}_output_HyPrColoc.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_HyPrColoc ;
+mv temporary/${output}_${ID}_SNPs temporary/${output}_${ID}_SNPs.txt ;
+mv temporary/${output}_${ID}_MR-PRESSO temporary/${output}_${ID}_MR-PRESSO.txt ;
+mv temporary/${output}_${ID}_SNPs.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR/${output}_${ID}_input_MR.txt ;
+mv temporary/Results_MR_all_methods_${output}_${ID}_SNPs.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR/Results_MR_all_methods_${output}_${ID}.txt ;
+mv temporary/Results_heterogeneity_${output}_${ID}_SNPs.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR/Results_heterogeneity_${output}_${ID}.txt ;
+mv temporary/Plot_${output}_${ID}_SNPs_MR.pdf $output/${output}_files/${output}_${ID}/${output}_${ID}_MR/Plot_${output}_${ID}_IVW.pdf ;
+mv temporary/Plot_${output}_${ID}_SNPs_MR_Egger.pdf $output/${output}_files/${output}_${ID}/${output}_${ID}_MR/Plot_${output}_${ID}_Egger.pdf ;
+mv temporary/Global_Test_${output}_${ID}_MR-PRESSO.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR-PRESSO ;
+mv temporary/Outlier_Test_${output}_${ID}_MR-PRESSO.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR-PRESSO ;
+mv temporary/Distortion_Test_${output}_${ID}_MR-PRESSO.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR-PRESSO ;
+mv temporary/Outliers_Indices_${output}_${ID}_MR-PRESSO.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR-PRESSO ;
+mv temporary/Main_MR_results_${output}_${ID}_MR-PRESSO.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR-PRESSO ;
+mv temporary/${output}_${ID}_MR-PRESSO.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR-PRESSO/${output}_${ID}_input_MR-PRESSO.txt ;
+rm -rf temporary/temp{snps,a,b,c,d,e,f,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33} ;
+echo " "
+echo "=> Analysis for "$ID" completed!"
+done
+rm -rf temporary ;
+echo " "
+echo "==========AMANDE INTERVAL completed=========="
+elif [ $rsID = "chr" ] && [ $exposure = "interval" ]
+then
+echo " "
+echo "==========AMANDE INTERVAL is launched (chr option)=========="	
+echo " "
+echo "----------Window setting: "$window"kb"
+echo "----------Pvalue pruning IVs: "$pvalue
+echo "----------GWAS: "$GWAS
+echo "----------Output: "$output
+mkdir $output
+mkdir $output/${output}_files
+mkdir temporary
+echo -e "Gene\tIV\tIVW_QQ_P\tIVW_Estimate\tIVW_P\tEgger_Estimate\tEgger_P\tEgger_Intercept_P\tPosterior_prob\tRegional_prob\tCandidate_snp\tPosterior_explained_by_snp\tGlobal_Test_P\tEstimate\tP\tEstimate_Out-Corr\tP_Out-Corr\tDistortion_Test_P" > $output/${output}_summary.txt
+listGenes=$(cat $1)
+for gene in $listGenes
+do
+	info=$(echo $gene | tr "_" "\n")
+	ARR=()
+	for k in $info
+	do
+		ARR+=($k)
+	done
+	ID=${ARR[0]}
+	chr=${ARR[1]}
+	pos=${ARR[2]}
+	echo " "		
+	echo "=> Preparing files for "$ID"..."
+	start=$(($pos-$window*1000))
+	end=$(($pos+$window*1000))
+
+awk '($3 >= '$start') && ($3 <= '$end')  { print $0 } ' ${INTERVAL}/${ID}/${ID}_chrom_${chr}_* | awk '{print "chr"$2":"$3, toupper($4), toupper($5), $6, $7, 10^$8}' > temporary/temp1 ;
+#awk 'FNR==NR{a[$1];next}($1 in a){print $1, $2 }' temporary/temp1 ${snp151}/snp151_build37/rs_chr$chr.txt > temporary/temp2 ;
+#while read p
+#do
+# IFS=' ' read -r -a array <<< "$p"
+# res="$(grep ${array[0]} temporary/temp1)"
+# echo $res" "${array[1]}
+#done < temporary/temp2 > temporary/temp3a ;
+#awk '{ print $7, $1, $2, $3, $4, $5, $6}' temporary/temp3a > temporary/temp4 ;
+awk '{ if($6 < '$pvalue') { print $1, $2, $3, $4, $5, $6} }' temporary/temp1 > temporary/temp8 ;
+sort -k6 -g temporary/temp8 > temporary/${output}_${ID}_pot_IVs.txt ;
+awk '{print $1}' temporary/${output}_${ID}_pot_IVs.txt > temporary/tempsnps ;
+echo " "
+echo "=> Performing LD pruning for "$ID"..."
+./system/LDlink.R ;
+awk '{print}' temporary/tempa > temporary/${output}_${ID}_log_SNPClip.txt ;
+awk '/kept/' temporary/${output}_${ID}_log_SNPClip.txt > temporary/temp9 ;
+awk '{print $2}' temporary/temp9 > temporary/${output}_${ID}_rsID_IVs.txt ;
+awk 'FNR==NR{a[$1];next}($1 in a){print $1, $2, $3, $4, $5, $6}' temporary/${output}_${ID}_rsID_IVs.txt $GWAS > temporary/temp19 ;
+awk 'FNR==NR{a[$1];next}($1 in a){print $1, $2, $3, $4, $5, $6}' temporary/temp19 temporary/${output}_${ID}_pot_IVs.txt > temporary/temp20 ;
+{ echo 'rsID EA OA Beta se Pvalue'; cat temporary/temp19; } > temporary/${output}_${ID}_IVs_GWAS.txt ;
+{ echo 'rsID EA OA Beta se Pvalue'; cat temporary/temp20; } > temporary/${output}_${ID}_IVs_INTERVAL.txt ;
+sort -k1,1 temporary/temp19 > temporary/temp14 ;
+sort -k1,1 temporary/temp20 > temporary/temp15 ;
+awk 'FILENAME=="temporary/temp15"{A[$1$2]=$1$2}
+FILENAME=="'"temporary/${output}_${ID}_IVs_GWAS.txt"'"{if(A[$1$2]){print $1, $2, $3, $4, $5, $6}}' temporary/temp15 temporary/${output}_${ID}_IVs_GWAS.txt > temporary/temp17 ;
+awk 'FILENAME=="temporary/temp15"{A[$1$2]=$1$2}
+FILENAME=="'"temporary/${output}_${ID}_IVs_GWAS.txt"'"{if(A[$1$3]){print $1, $2, $3, (-$4), $5, $6}}' temporary/temp15 temporary/${output}_${ID}_IVs_GWAS.txt > temporary/temp18 ;
+cat temporary/temp17 temporary/temp18 > temporary/temp20 ;
+sort -k1,1 temporary/temp20 > temporary/temp21 ;
+join temporary/temp15 temporary/temp21 > temporary/temp22 ;
+awk '{print $1, $3, $2, $4, $5, $9, $10}' temporary/temp22 > temporary/temp23 ;
+{ echo 'snps other_allele effect_allele b_eQTL b_eQTLse b_GWAS b_GWASse'; cat temporary/temp23; } > temporary/${output}_${ID}_SNPs ;
+mkdir $output/${output}_files/${output}_${ID} ;
+mkdir $output/${output}_files/${output}_${ID}/${output}_${ID}_IVs ;
+mkdir $output/${output}_files/${output}_${ID}/${output}_${ID}_MR ;
+mkdir $output/${output}_files/${output}_${ID}/${output}_${ID}_HyPrColoc ;
+mkdir $output/${output}_files/${output}_${ID}/${output}_${ID}_MR-PRESSO ;
+echo " "
+echo "=> Performing Mendelian randomization for "$ID"..."
+./system/MR.R ;
+awk 'FNR==NR{a[$1];next}($1 in a){print $1, $2, $3, $4, $5}' temporary/temp1 $GWAS > temporary/temp24 ;
+awk 'FNR==NR{a[$1];next}($1 in a){print $1, $2, $3, $4, $5}' temporary/temp24 temporary/temp1 > temporary/temp25 ;
+awk 'FILENAME=="'"temporary/temp25"'"{A[$1$2]=$1$2}
+FILENAME=="'"temporary/temp24"'"{if(A[$1$2]){print $1, $2, $3, $4, $5}}' temporary/temp25 temporary/temp24 > temporary/tempc ;
+awk 'FILENAME=="'"temporary/temp25"'"{A[$1$2]=$1$2}
+FILENAME=="'"temporary/temp24"'"{if(A[$1$3]){print $1, $2, $3, (-$4), $5}}' temporary/temp25 temporary/temp24 > temporary/tempd ;
+cat temporary/tempc temporary/tempd > temporary/tempe ;
+sort -k1,1 temporary/temp25 > temporary/temp26
+sort -k1,1 temporary/tempe > temporary/tempf
+join temporary/temp26 temporary/tempf > temporary/temp28 ;
+awk '{print $1, $4, $8}' temporary/temp28 > temporary/temp29 ;
+{ echo 'T1 T2'; cat temporary/temp29; } > temporary/${output}_${ID}_input_HyPrColoc_Beta.txt ;
+awk '{print $1, $5, $9}' temporary/temp28 > temporary/temp30 ;
+{ echo 'T1 T2'; cat temporary/temp30; } > temporary/${output}_${ID}_input_HyPrColoc_SE.txt ;
+echo " "
+echo "=> Performing colocalization for "$ID"..."
+./system/HyPrColoc.R
+mv temporary/out_hyprcoloc.txt temporary/${output}_${ID}_output_HyPrColoc.txt
+awk '{print $1, $3, $2, $4, $5, $6, $9, $10, $11}' temporary/temp22 > temporary/tempb ;
+{ echo 'snps other_allele effect_allele E1_Effect E1_se p_E1 Y_Effect Y_se p_Y'; cat temporary/tempb; } > temporary/${output}_${ID}_MR-PRESSO ;
+echo " "
+echo "=> Performing MR-PRESSO for "$ID"..."
+./system/MR-PRESSO.R ;
+IV=$(wc -l temporary/${output}_${ID}_SNPs | awk '{print $1-1}')
+if (($IV >= 3))
+then
+	IVW_QQ=$(tail -n +2 temporary/Results_heterogeneity_${output}_${ID}_SNPs.txt | awk '{print $1}')
+	IVW_Estimate=$(sed '5q;d' temporary/Results_MR_all_methods_${output}_${ID}_SNPs.txt | awk '{print $2}')
+	IVW_P=$(sed '5q;d' temporary/Results_MR_all_methods_${output}_${ID}_SNPs.txt | awk '{print $6}')
+	Egger_Estimate=$(sed '9q;d' temporary/Results_MR_all_methods_${output}_${ID}_SNPs.txt | awk '{print $2}')
+	Egger_P=$(sed '9q;d' temporary/Results_MR_all_methods_${output}_${ID}_SNPs.txt | awk '{print $6}')
+	Egger_P_Intercept=$(sed '10q;d' temporary/Results_MR_all_methods_${output}_${ID}_SNPs.txt | awk '{print $6}')
+	coloc=$(tail -n +2 temporary/${output}_${ID}_output_HyPrColoc.txt | awk '{print $1"\t"$2"\t"$3"\t"$4}' )
+	Global_Test=$(tail -n +2 temporary/Global_Test_${output}_${ID}_MR-PRESSO.txt | awk '{print $1}' )
+	Distortion_Test=$(tail -n +2 temporary/Distortion_Test_${output}_${ID}_MR-PRESSO.txt | awk '{print $1}' )
+	Estimate=$(sed '2q;d' temporary/Main_MR_results_${output}_${ID}_MR-PRESSO.txt | awk '{print $3}')
+	P=$(sed '2q;d' temporary/Main_MR_results_${output}_${ID}_MR-PRESSO.txt | awk '{print $6}')
+	Estimate_OC=$(sed '3q;d' temporary/Main_MR_results_${output}_${ID}_MR-PRESSO.txt | awk '{print $3}')
+	P_OC=$(sed '3q;d' temporary/Main_MR_results_${output}_${ID}_MR-PRESSO.txt | awk '{print $6}')
+	echo -e $ID"\t"$IV"\t"$IVW_QQ"\t"$IVW_Estimate"\t"$IVW_P"\t"$Egger_Estimate"\t"$Egger_P"\t"$Egger_P_Intercept"\t"$coloc"\t"$Global_Test"\t"$Estimate"\t"$P"\t"$Estimate_OC"\t"$P_OC"\t"$Distortion_Test >> $output/${output}_summary.txt
+else
+	coloc=$(tail -n +2 temporary/${output}_${ID}_output_HyPrColoc.txt | awk '{print $1"\t"$2"\t"$3"\t"$4}' )
+	echo -e $ID"\t"$IV"\tNA\tNA\tNA\tNA\tNA\tNA\t"$coloc"\tNA\tNA\tNA\tNA\tNA\tNA" >> $output/${output}_summary.txt
+fi
+mv temporary/${output}_${ID}_pot_IVs.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_IVs ;
+mv temporary/${output}_${ID}_log_SNPClip.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_IVs
+mv temporary/${output}_${ID}_rsID_IVs.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_IVs ;
+mv temporary/${output}_${ID}_IVs_GWAS.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_IVs ;
+mv temporary/${output}_${ID}_IVs_INTERVAL.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_IVs ;
+mv temporary/${output}_${ID}_input_HyPrColoc_Beta.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_HyPrColoc ;
+mv temporary/${output}_${ID}_input_HyPrColoc_SE.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_HyPrColoc ;
+mv temporary/${output}_${ID}_output_HyPrColoc.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_HyPrColoc ;
+mv temporary/${output}_${ID}_SNPs temporary/${output}_${ID}_SNPs.txt ;
+mv temporary/${output}_${ID}_MR-PRESSO temporary/${output}_${ID}_MR-PRESSO.txt ;
+mv temporary/${output}_${ID}_SNPs.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR/${output}_${ID}_input_MR.txt ;
+mv temporary/Results_MR_all_methods_${output}_${ID}_SNPs.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR/Results_MR_all_methods_${output}_${ID}.txt ;
+mv temporary/Results_heterogeneity_${output}_${ID}_SNPs.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR/Results_heterogeneity_${output}_${ID}.txt ;
+mv temporary/Plot_${output}_${ID}_SNPs_MR.pdf $output/${output}_files/${output}_${ID}/${output}_${ID}_MR/Plot_${output}_${ID}_IVW.pdf ;
+mv temporary/Plot_${output}_${ID}_SNPs_MR_Egger.pdf $output/${output}_files/${output}_${ID}/${output}_${ID}_MR/Plot_${output}_${ID}_Egger.pdf ;
+mv temporary/Global_Test_${output}_${ID}_MR-PRESSO.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR-PRESSO ;
+mv temporary/Outlier_Test_${output}_${ID}_MR-PRESSO.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR-PRESSO ;
+mv temporary/Distortion_Test_${output}_${ID}_MR-PRESSO.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR-PRESSO ;
+mv temporary/Outliers_Indices_${output}_${ID}_MR-PRESSO.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR-PRESSO ;
+mv temporary/Main_MR_results_${output}_${ID}_MR-PRESSO.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR-PRESSO ;
+mv temporary/${output}_${ID}_MR-PRESSO.txt $output/${output}_files/${output}_${ID}/${output}_${ID}_MR-PRESSO/${output}_${ID}_input_MR-PRESSO.txt ;
+rm -rf temporary/temp{snps,a,b,c,d,e,f,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33} ;
+echo " "
+echo "=> Analysis for "$ID" completed!"
+done
+rm -rf temporary;
+echo " "
+echo "==========AMANDE INTERVAL completed=========="
+else
+echo "ERROR: call Chuck Norris"
+fi
