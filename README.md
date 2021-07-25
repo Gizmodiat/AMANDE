@@ -1,2 +1,3 @@
 # AMANDE
-Automated Mendelian randomization, Bayesian colocalization and horizontal pleiotropy detection in genetic association studies.
+# Automated Mendelian rAndomization aND bayEsian colocalization
+AMANDE performs automated Mendelian randomizations, Bayesian colocalizations and horizontal pleiotropy detections from genetic association studies.
