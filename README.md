@@ -1,7 +1,7 @@
 # Automated Mendelian rAndomization aND bayEsian colocalization (AMANDE)
 AMANDE performs automated Mendelian randomizations, Bayesian colocalizations and horizontal pleiotropy detections from genetic association studies.
 
-##Download AMANDE:
+**Download AMANDE:**
 git clone https://github.com/Gizmodiat/AMANDE.git
 
 Download eQTLGen and snp151 data:
