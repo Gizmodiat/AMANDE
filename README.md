@@ -3,7 +3,7 @@ AMANDE performs automated Mendelian randomizations, Bayesian colocalizations and
 
 # **Prerequired:**  
 Install the following R packages: LDlinkR, MendelianRandomization, hyprcoloc, MRPRESSO.  
-Retrieve a token for LDlink after registration at https://ldlink.nci.nih.gov/?tab=apiaccess  
+_**Retrieve a token for LDlink after registration at https://ldlink.nci.nih.gov/?tab=apiaccess**_  
 Keep your own registered token.  
 
 Download eQTLGen data (4.5GB compressed) from:  
@@ -22,7 +22,7 @@ Download INTERVAL data (3,283 SOMAmers used to assay the 2,995 proteins ~2.4TB u
 https://app.box.com/s/u3flbp13zjydegrxjb2uepagp1vb6bj2  
 Download the entire dataset or protein(s) of interest if needed.  
 Each folder, which is named according to the ID of the SOMAmer, must be unzipped. In addition, the 22 gzipped files in each folfer must be uncompressed to obtain .tsv text files.  
-_**Folders unzipped containing the ungzipped .tsv files must be located in a folder named "INTERVAL_for_AMANDE**_
+_**Folders unzipped containing the ungzipped .tsv files must be located in a folder named "INTERVAL_for_AMANDE".**_
 
 Download snp151 data (9.64GB compressed) from:  
 https://www.dropbox.com/s/6crvgalonj68q6u/snp151_for_AMANDE.zip?dl=0  
@@ -36,10 +36,16 @@ Clone AMANDE to your home folder:
 `unzip AMANDE.zip`  
 `cd AMANDE`  
 
-Replace the example token `"token="enter_yours"` with your own registered token in the LDlink.R file:  
+Replace the example token `token="enter_yours"` with your own token in the LDlink.R file:  
 `gedit system/LDlink.R`  
 
-Edit the config.txt file with your own paths to the folders eQTLGen_for_AMANDE, GTEx_for_AMANDE, INTERVAL_for_AMANDE, snp151_for_AMANDE:  
+Edit the config.txt file with your own paths to the folders eQTLGen_for_AMANDE, GTEx_for_AMANDE, INTERVAL_for_AMANDE and snp151_for_AMANDE:  
 `gedit config.txt`  
 
-I
+_Optional:_
+Adjust settings for instrumental variables (IVs) pruning are CEU population, LD r2 threshold <0.1 and MAF>0.01. If necessary adjust the settings by editing
+
+
+# **Usage:**  
+Input files
+
