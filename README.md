@@ -21,7 +21,7 @@ Unzip it:
 Download INTERVAL data (3,283 SOMAmers used to assay the 2,995 proteins ~2.4TB uncompressed) from:  
 https://app.box.com/s/u3flbp13zjydegrxjb2uepagp1vb6bj2  
 Download the entire dataset or protein(s) of interest if needed.  
-Each folder, which is named according to the ID of the SOMAmer, must be unzip. In addition, the 22 gzipped files in each folfer must be uncompressed to obtain .tsv text files.  
+Each folder, which is named according to the ID of the SOMAmer, must be unzipped. In addition, the 22 gzipped files in each folfer must be uncompressed to obtain .tsv text files.  
 _**Folders unzipped containing the ungzipped .tsv files must be located in a folder named "INTERVAL_for_AMANDE**_
 
 Download snp151 data (9.64GB compressed) from:  
