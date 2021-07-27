@@ -22,7 +22,7 @@ Download INTERVAL data (3,283 SOMAmers used to assay the 2,995 proteins ~2.4TB w
 https://app.box.com/s/u3flbp13zjydegrxjb2uepagp1vb6bj2 or alternatively connect to the site using rclone or lftp. For instructions please contact Adam Butterworth (asb38@medschl.cam.ac.uk).  
 Download the entire dataset or protein(s) of interest if needed  (see Sun et al., Nature, 2018).  
 Each folder, which is named according to the ID of the SOMAmer, must be unzipped. In addition, the 22 gzipped files in each folder must be uncompressed to obtain '.tsv' text files.  
-_**Folders unzipped containing the ungzipped .tsv files must be located in a folder named "INTERVAL_for_AMANDE".**_
+_**Folders unzipped containing the ungzipped .tsv files must be located in a folder "INTERVAL_for_AMANDE".**_
 
 Download snp151 data (9.64GB compressed) from:  
 https://www.dropbox.com/s/6crvgalonj68q6u/snp151_for_AMANDE.zip?dl=0  
@@ -33,6 +33,12 @@ Unzip:  -rs | -chr: rsID format for outcome data.
 -output: output prefix name. This name will be the name of the main output folder and the prefix for the sub-folders and files.
 
 `unzip snp151_for_AMANDE.zip`  
+
+_Optional:_  
+Download an example of outcome data (164MB compressed) for genetic associations with coronary artery disease (van der Harst and Niek Verweij, Circulation Research, 2018) from:  
+https://www.dropbox.com/s/8ex319rtvjmz4b0/GWAS_example.zip?dl=0  
+Unzip it:  
+`unzip GWAS_example.zip`  
 
 # **Installation and configuration:**  
 Clone AMANDE to your home folder:  
@@ -70,11 +76,11 @@ The outcome '.txt' file prepared from GWAS summary statistics must contain with 
 Run AMANDE with the following syntax:  
 ./AMANDE.exe <input_exposures.txt> <input_outcome.txt> [-rs | -chr] [-eqtlgen | -gtex | interval] [-window] [-pvalue] [-output]  
 
--rs | -chr: rsID format of the outcome. 
--eqtlgen | -gtex | interval: exposures of interest.  
--window: window for Mendelian randomization and colocalization analysis (in kilobases, ex: 500).  
--pvalue: pvalue threshold for IVs pruning.  
--output: output prefix name. This name will be the name of the main output folder and the prefix for the sub-folders and files.  
+-rs | -chr: select the snp ID format of the outcome. 
+-eqtlgen | -gtex | interval: select the exposure of interest.  
+-window: set the window from which perform Mendelian randomization and colocalization analysis in kilobases (for example `-500` will set a window of 500 kilobases arround the genomic position of each exposures entered in the 'input_exposures.txt file).  
+-pvalue: the pvalue threshold for instrumental variables pruning.  
+-output: the output prefix name. This name will be the name of the main output folder and the prefix of sub-folders and files.  
 
 
 
