@@ -18,7 +18,7 @@ After downloading the original GTEx data, I will provide a compressed file "GTEx
 Unzip it:  
 `unzip GTEx_for_AMANDE.zip`
 
-Download INTERVAL data (3,283 SOMAmers used to assay the 2,995 proteins ~2.4TB uncompressed) from:  
+Download INTERVAL data (3,283 SOMAmers used to assay the 2,995 proteins ~2.4TB when uncompressed) from:  
 https://app.box.com/s/u3flbp13zjydegrxjb2uepagp1vb6bj2  
 Download the entire dataset or protein(s) of interest if needed.  
 Each folder, which is named according to the ID of the SOMAmer, must be unzipped. In addition, the 22 gzipped files in each folder must be uncompressed to obtain '.tsv' text files.  
