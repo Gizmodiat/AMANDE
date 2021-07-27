@@ -14,14 +14,14 @@ Unzip:
 Download GTEx v8 data:  
 _**Please contact me.**_  
 AMANDE uses data reformatted from the cis-eQTL associations tested in each tissue. Original data available in a requester pays bucket must be downloaded prior to use the reformatted GTEx data for AMANDE. More information here: https://gtexportal.org/home/datasets  
-After downloading the original GTEx data, I will provide a compressed file "GTEx_for_AMANDE.zip" (49 tissues ~115GB).  
+After downloading the original GTEx data, I will provide a compressed file "GTEx_for_AMANDE.zip" (49 tissues ~115GB compressed).  
 Unzip it:  
 `unzip GTEx_for_AMANDE.zip`
 
 Download INTERVAL data (3,283 SOMAmers used to assay the 2,995 proteins ~2.4TB uncompressed) from:  
 https://app.box.com/s/u3flbp13zjydegrxjb2uepagp1vb6bj2  
 Download the entire dataset or protein(s) of interest if needed.  
-Each folder, which is named according to the ID of the SOMAmer, must be unzipped. In addition, the 22 gzipped files in each folder must be uncompressed to obtain .tsv text files.  
+Each folder, which is named according to the ID of the SOMAmer, must be unzipped. In addition, the 22 gzipped files in each folder must be uncompressed to obtain '.tsv' text files.  
 _**Folders unzipped containing the ungzipped .tsv files must be located in a folder named "INTERVAL_for_AMANDE".**_
 
 Download snp151 data (9.64GB compressed) from:  
@@ -42,10 +42,20 @@ Replace the example token `token="enter_yours"` with your own token in the LDlin
 Edit the config.txt file with your own paths to the folders eQTLGen_for_AMANDE, GTEx_for_AMANDE, INTERVAL_for_AMANDE and snp151_for_AMANDE:  
 `gedit config.txt`  
 
-_Optional:_
-Adjust settings for instrumental variables (IVs) pruning are CEU population, LD r2 threshold <0.1 and MAF>0.01. If necessary adjust the settings by editing
+_Optional:_  
+Adjust settings for instrumental variables pruning (default settings are CEU population, LD r2 threshold <0.1 and MAF>0.01) by modifying `pop = "CEU", r2_threshold = "0.1", maf_threshold = "0.01"` in the LDlink.R file (population codes for LDlink are given below):  
+`gedit system/LDlink.R`  
 
 
 # **Usage:**  
-Input files
+User have to prepare two input files: one for the exposures to test, and one for the outocome.  
+Exposures to test are either genes (for eQTLGen and GTEx) or proteins (for INTERVAL).  
+
+For genes, prepare a '.txt' file containing a list of the Ensembl ID for the exposures and the genome position from which you want to perform the instrumental variables pruning and colocalization (see the 'example_ENSEMBL_list.txt' file in the 'example' folder of AMANDE).  
+For each exposure to test, this must contains
+
+
+
+
+
 
