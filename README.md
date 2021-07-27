@@ -53,13 +53,11 @@ Replace the example token `token="enter_yours"` with your own token in the LDlin
 Edit the config.txt file with your own paths to the folders eQTLGen_for_AMANDE, GTEx_for_AMANDE, INTERVAL_for_AMANDE and snp151_for_AMANDE:  
 `gedit config.txt`  
 
-For GTEx:  
-Manage tissues to include in analysis by creating symbolic links in a 'GTEx_for_AMANDE' folder from tissues include the 'GTExv8_AMANDE_FORMAT' folder downloaded.  
-
-Example for whole blood and testis:  
-`cd path_to_GTEx_for_AMANDE`
-`ln -s path_to/GTExv8_AMANDE_FORMAT/GTEx_Analysis_v8_eQTL_all_associations_Whole_Blood`
-`ln -s path_to/GTExv8_AMANDE_FORMAT/GTEx_Analysis_v8_eQTL_all_associations_Testis`
+Create a 'GTEx for AMANDE' folder. Then,  select the tissues of interest by  creating symbolic links in this folder from tissues of the 'GTEx_for_AMANDE' folder.  
+To perform analysis on whole blood and testis for example, enter:  
+`cd path_to_GTEx_for_AMANDE`  
+`ln -s path_to_GTExv8_AMANDE_FORMAT/GTEx_Analysis_v8_eQTL_all_associations_Whole_Blood`  
+`ln -s path_to_GTExv8_AMANDE_FORMAT/GTEx_Analysis_v8_eQTL_all_associations_Testis`  
 
 
 _Optional:_  
