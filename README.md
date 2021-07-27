@@ -53,6 +53,15 @@ Replace the example token `token="enter_yours"` with your own token in the LDlin
 Edit the config.txt file with your own paths to the folders eQTLGen_for_AMANDE, GTEx_for_AMANDE, INTERVAL_for_AMANDE and snp151_for_AMANDE:  
 `gedit config.txt`  
 
+For GTEx:  
+Manage tissues to include in analysis by creating symbolic links in a 'GTEx_for_AMANDE' folder from tissues include the 'GTExv8_AMANDE_FORMAT' folder downloaded.  
+
+Example for whole blood and testis:  
+`cd path_to_GTEx_for_AMANDE`
+`ln -s path_to/GTExv8_AMANDE_FORMAT/GTEx_Analysis_v8_eQTL_all_associations_Whole_Blood`
+`ln -s path_to/GTExv8_AMANDE_FORMAT/GTEx_Analysis_v8_eQTL_all_associations_Testis`
+
+
 _Optional:_  
 Adjust settings for instrumental variables pruning (default settings are CEU population, LD r2 threshold <0.1 and MAF>0.01) by modifying `pop = "CEU", r2_threshold = "0.1", maf_threshold = "0.01"` in the LDlink.R file (population codes for LDlink are given below):  
 `gedit system/LDlink.R`  
