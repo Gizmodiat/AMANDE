@@ -19,8 +19,8 @@ Unzip it:
 `unzip GTEx_for_AMANDE.zip`
 
 Download INTERVAL data (3,283 SOMAmers used to assay the 2,995 proteins ~2.4TB when uncompressed) from:  
-https://app.box.com/s/u3flbp13zjydegrxjb2uepagp1vb6bj2  
-Download the entire dataset or protein(s) of interest if needed.  
+https://app.box.com/s/u3flbp13zjydegrxjb2uepagp1vb6bj2 or alternatively connect to the site using rclone or lftp. For instructions please contact Adam Butterworth (asb38@medschl.cam.ac.uk).  
+Download the entire dataset or protein(s) of interest if needed  (see Sun et al., Nature, 2018).  
 Each folder, which is named according to the ID of the SOMAmer, must be unzipped. In addition, the 22 gzipped files in each folder must be uncompressed to obtain '.tsv' text files.  
 _**Folders unzipped containing the ungzipped .tsv files must be located in a folder named "INTERVAL_for_AMANDE".**_
 
@@ -55,6 +55,7 @@ For genes, prepare a '.txt' file containing a list of the Ensembl ID of the expo
 For proteins, prepare an equivalent '.txt' file containning the ID of SOMAmers and proteins, and the genomic positions from which perform the instrumental variables pruning and colocalization analysis like `IL6R.8092.29.3_1_154377669` (see 'example_INTERVAL_list.txt' in the example folder).  
 
 _**Prepare an input file for the outcome**_  
+The outcome file (from GWAS summary statistics) must contain with the 6 following columns: rs OR chr:position | Effect Allele | Other Allele | Beta | se | Pvalue (ex: chr1:1234 A T 0.8 0.002 1.23e-10 _or_ rs1234 A T 0.8 0.002 1.23e-10).
 
 
 
