@@ -89,9 +89,16 @@ Run AMANDE with the following syntax:
 `-pvalue`: the pvalue threshold for instrumental variables pruning.  
 `-output`: the output prefix name. This name will be the name of the main output folder and the prefix of sub-folders and files.  
 
-_Optional:_
-Run AMANDE from examples provided:  
-F
+_Optional: run AMANDE with the example data:_  
+
+`./AMANDE.exe example_ENSEMBL_list.txt CAD_Harst_chr.txt -chr -eqtlgen -250 -0.001 -eQTLGen_CAD_250kb_p001`  
+`./AMANDE.exe example_ENSEMBL_list.txt CAD_Harst_rs.txt -rs -interval -500 -0.05 -INTERAVAL_CAD_500kb_p05`  
+
+
+# **Output:**  
+
+The 'summary.txt' file in the main folder includes key results for Mendelian randomizations and colocalizations analysis.
+The first column `Gene/Protein` is the ID of the exposure and the second `IV` the number of instrumental variables used for the Mendelian randomization analysis.
 
 
 
