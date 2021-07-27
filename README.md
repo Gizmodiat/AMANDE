@@ -68,12 +68,13 @@ The outcome '.txt' file prepared from GWAS summary statistics must contain with 
 # **Usage:**  
 
 Run AMANDE with the following syntax:  
-./AMANDE.exe <input_exposures.txt> <input_outcome.txt> [-rs | -chr] [-eqtlgen | -gtex | interval] [-window] [-pvalue] [-output]
+./AMANDE.exe <input_exposures.txt> <input_outcome.txt> [-rs | -chr] [-eqtlgen | -gtex | interval] [-window] [-pvalue] [-output]  
+
 -rs | -chr: rsID format of the outcome. 
--eqtlgen | -gtex | interval: exposures of interest.
--window: window for Mendelian randomization and colocalization analysis (in kilobases, ex: 500).
--pvalue: pvalue threshold for IVs pruning.
--output: output prefix name. This name will be the name of the main output folder and the prefix for the sub-folders and files.
+-eqtlgen | -gtex | interval: exposures of interest.  
+-window: window for Mendelian randomization and colocalization analysis (in kilobases, ex: 500).  
+-pvalue: pvalue threshold for IVs pruning.  
+-output: output prefix name. This name will be the name of the main output folder and the prefix for the sub-folders and files.  
 
 
 
