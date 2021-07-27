@@ -51,7 +51,8 @@ Adjust settings for instrumental variables pruning (default settings are CEU pop
 User have to prepare two input files: one for exposures, and one for the outocome.  
 Exposures are either genes (for eQTLGen and GTEx) or proteins (for INTERVAL).  
 
-For genes, prepare a '.txt' file containing a list of the Ensembl ID for the exposures and the genomic position (chromosome and position) from which you want to perform the instrumental variables pruning and colocalization (see the 'example_ENSEMBL_list.txt' file in the 'example' folder), for example for one line only in the file:
+For genes, prepare a '.txt' file containing a list of the Ensembl ID for the exposures and the genomic positions (chromosome and position) from which you want to perform the instrumental variables pruning and colocalization analysis (see the 'example_ENSEMBL_list.txt' file in the 'example' folder of AMANDE).  
+Brir
 `ENSG00000042493_2_85645555`
 
 
