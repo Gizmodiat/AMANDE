@@ -14,7 +14,7 @@ Unzip:
 Download GTEx v8 data:  
 _**Please contact me.**_  
 AMANDE uses data reformatted from the cis-eQTL associations tested in each tissue. Original data available in a requester pays bucket must be downloaded prior to use the reformatted GTEx data for AMANDE. More information here: https://gtexportal.org/home/datasets  
-After downloading the original GTEx data, I will provide a compressed file "GTEx_for_AMANDE.zip" (49 tissues ~115GB compressed).  
+After the download of original GTEx data, I will provide a compressed file "GTEx_for_AMANDE.zip" (49 tissues ~115GB compressed).  
 Unzip it:  
 `unzip GTEx_for_AMANDE.zip`
 
@@ -47,10 +47,15 @@ Adjust settings for instrumental variables pruning (default settings are CEU pop
 `gedit system/LDlink.R`  
 
 
-# **Usage:**  
-Prepare an input files for exposures: either genes (for eQTLGen and GTEx) or proteins (for INTERVAL):  
-For genes, prepare a '.txt' file containing a list of the Ensembl ID for the exposures and the genomic positions (chromosome and position) from which you want to perform the instrumental variables pruning and colocalization analysis like `ENSG00000042493_2_85645555` (see the 'example_ENSEMBL_list.txt' file in the 'example' folder of AMANDE).  
-For proteins, prepare an equivalent file containning the ID of SOMAmers and proteins, and the genomic positions from which perform instrumental variables pruning and colocalization analysis 
+# **Input files:**  
+_**Prepare an input file for exposures**_: genes (eQTLGen and GTEx) or proteins (INTERVAL):  
+
+For genes, prepare a '.txt' file containing a list of the Ensembl ID of the exposures and the genomic positions (chromosome and position) from which perform the instrumental variables pruning and colocalization analysis: each line of the file will contain the Ensembl ID of an exposure and a genomic position like `ENSG00000042493_2_85645555` (see 'example_ENSEMBL_list.txt' in the 'example' folder).  
+
+For proteins, prepare an equivalent '.txt' file containning the ID of SOMAmers and proteins, and the genomic positions from which perform the instrumental variables pruning and colocalization analysis like `IL6R.8092.29.3_1_154377669` (see 'example_INTERVAL_list.txt' in the example folder).  
+
+_**Prepare an input file for the outcome**_  
+
 
 
 
