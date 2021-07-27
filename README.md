@@ -66,7 +66,7 @@ Adjust settings for instrumental variables pruning (default settings are CEU pop
 
 
 # **Input files:**  
-
+ ./AMANDE.exe example_INTERVAL_list.txt CAD_Harst_rs.txt -rs -interval -500 -0.05 -INTERAVAL_CAD_500kb_p05
 AMANDE needs an input file for exposures and an input file for the outcome.  
 
 _**Prepare an input file for exposures**_: genes (eQTLGen and GTEx) or proteins (INTERVAL):  
@@ -92,13 +92,17 @@ Run AMANDE with the following syntax:
 _Optional: run AMANDE with the example data:_  
 
 `./AMANDE.exe example_ENSEMBL_list.txt CAD_Harst_chr.txt -chr -eqtlgen -250 -0.001 -eQTLGen_CAD_250kb_p001`  
-`./AMANDE.exe example_INTERVAL_list.txt CAD_Harst_rs.txt -rs -interval -500 -0.05 -INTERAVAL_CAD_500kb_p05`  
+`./AMANDE.exe example_INTERVAL_list.txt CAD_Harst_rs.txt -rs -interval -500 -0.05 -INTERVAL_CAD_500kb_p05`  
 
 
 # **Output:**  
 
 The 'summary.txt' file in the main folder includes key results for Mendelian randomizations and colocalizations analysis.
-The first column `Gene/Protein` is the ID of the exposure and the second `IV` the number of instrumental variables used for the Mendelian randomization analysis.
+The first column "Gene/Protein" is the ID of the exposure, and the second "IV" the number of instrumental variables used for the Mendelian randomization.  
+
+Columns #3 to #8: Results of Mendelian Randomizations from the "MendelianRandomization" R package:
+`IVW_QQ_P
+IVW_Estimate
 
 
 
