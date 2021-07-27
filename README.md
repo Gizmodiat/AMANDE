@@ -58,7 +58,12 @@ For genes, prepare a '.txt' file containing a list of the Ensembl ID of the expo
 For proteins, prepare an equivalent '.txt' file containning the ID of SOMAmers and proteins, and the genomic positions from which perform the instrumental variables pruning and colocalization analysis like `IL6R.8092.29.3_1_154377669` (see 'example_INTERVAL_list.txt' in the example folder).  
 
 _**Prepare an input file for the outcome**_  
-The outcome '.txt' file prepared from GWAS summary statistics must contain with the 6 following columns: rs OR chr:position | Effect Allele | Other Allele | Beta | se | Pvalue (ex: chr1:1234 A T 0.8 0.002 1.23e-10 _or_ rs1234 A T 0.8 0.002 1.23e-10).
+The outcome '.txt' file prepared from GWAS summary statistics must contain with the 6 following columns: rs OR chr:position | Effect Allele | Other Allele | Beta | se | Pvalue (ex: chr1:1234 A T 0.8 0.002 1.23e-10 _or_ rs1234 A T 0.8 0.002 1.23e-10).  
+
+# **Usage:**  
+
+Run AMANDE with the following syntax:  
+./AMANDE.exe <input_exposures.txt> <input_outcome.txt> [-rs | -chr] [-eqtlgen | -gtex | interval] [-window] [-pvalue] [-output]
 
 
 
