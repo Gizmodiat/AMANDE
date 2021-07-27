@@ -23,7 +23,7 @@ https://app.box.com/s/u3flbp13zjydegrxjb2uepagp1vb6bj2 or alternatively connect 
 Download the entire dataset or protein(s) of interest if needed  (see Sun et al., Nature, 2018).  
 Each folder, which is named according to the ID of the SOMAmer, must be unzipped. In addition, the 22 gzipped files in each folder must be uncompressed to obtain '.tsv' text files.  
 _**Folders unzipped containing the ungzipped .tsv files must be located in a folder "INTERVAL_for_AMANDE".**_
-
+/home/arnaud/GWAS_example/
 Download snp151 data (9.64GB compressed) from:  
 https://www.dropbox.com/s/6crvgalonj68q6u/snp151_for_AMANDE.zip?dl=0  
 Unzip:  -rs | -chr: rsID format for outcome data. 
@@ -92,7 +92,7 @@ Run AMANDE with the following syntax:
 _Optional: run AMANDE with the example data:_  
 
 `./AMANDE.exe example_ENSEMBL_list.txt CAD_Harst_chr.txt -chr -eqtlgen -250 -0.001 -eQTLGen_CAD_250kb_p001`  
-`./AMANDE.exe example_ENSEMBL_list.txt CAD_Harst_rs.txt -rs -interval -500 -0.05 -INTERAVAL_CAD_500kb_p05`  
+`./AMANDE.exe example_INTERVAL_list.txt CAD_Harst_rs.txt -rs -interval -500 -0.05 -INTERAVAL_CAD_500kb_p05`  
 
 
 # **Output:**  
