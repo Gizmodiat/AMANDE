@@ -74,14 +74,17 @@ The outcome '.txt' file prepared from GWAS summary statistics must contain with 
 # **Usage:**  
 
 Run AMANDE with the following syntax:  
-./AMANDE.exe <input_exposures.txt> <input_outcome.txt> [-rs | -chr] [-eqtlgen | -gtex | interval] [-window] [-pvalue] [-output]  
+`./AMANDE.exe <input_exposures.txt> <input_outcome.txt> [-rs | -chr] [-eqtlgen | -gtex | interval] [-window] [-pvalue] [-output]`  
 
--rs | -chr: select the snp ID format of the outcome. 
--eqtlgen | -gtex | interval: select the exposure of interest.  
--window: set the window from which perform Mendelian randomization and colocalization analysis in kilobases (for example `-500` will set a window of 500 kilobases arround the genomic position of each exposures entered in the 'input_exposures.txt file).  
--pvalue: the pvalue threshold for instrumental variables pruning.  
--output: the output prefix name. This name will be the name of the main output folder and the prefix of sub-folders and files.  
+`-rs | -chr`: select the snp ID format of the outcome.  
+`-eqtlgen | -gtex | interval`: select the exposure of interest.  
+-`window`: set the window from which perform Mendelian randomizations and colocalizations analysis in kilobases (for example `-500` will set a window of 500 kilobases arround the genomic position of each exposure of the 'input_exposures.txt file).  
+`-pvalue`: the pvalue threshold for instrumental variables pruning.  
+`-output`: the output prefix name. This name will be the name of the main output folder and the prefix of sub-folders and files.  
 
+_Optional:_
+Run AMANDE from examples provided:  
+F
 
 
 
