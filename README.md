@@ -64,7 +64,7 @@ _Optional:_
 Adjust settings for instrumental variables pruning (default settings are CEU population, LD r2 threshold <0.1 and MAF>0.01) by modifying `pop = "CEU", r2_threshold = "0.1", maf_threshold = "0.01"` in the LDlink.R file (population codes for LDlink are given below):  
 `gedit system/LDlink.R`  
 
-
+Mendelian randomizations
 # **Input files:**  
  ./AMANDE.exe example_INTERVAL_list.txt CAD_Harst_rs.txt -rs -interval -500 -0.05 -INTERAVAL_CAD_500kb_p05
 AMANDE needs an input file for exposures and an input file for the outcome.  
@@ -77,12 +77,12 @@ For proteins, prepare an equivalent '.txt' file containning the ID of SOMAmers a
 
 _**Prepare an input file for the outcome**_  
 The outcome '.txt' file prepared from GWAS summary statistics must contain with the 6 following columns: rs OR chr:position | Effect Allele | Other Allele | Beta | se | Pvalue (ex: chr1:1234 A T 0.8 0.002 1.23e-10 _or_ rs1234 A T 0.8 0.002 1.23e-10).  
-
+Posterior_prob
 # **Usage:**  
 
 Run AMANDE with the following syntax:  
 `./AMANDE.exe <input_exposures.txt> <input_outcome.txt> [-rs | -chr] [-eqtlgen | -gtex | interval] [-window] [-pvalue] [-output]`  
-
+Posterior_prob
 `-rs | -chr`: select the snp ID format of the outcome.  
 `-eqtlgen | -gtex | interval`: select the exposure of interest.  
 -`window`: set the window from which perform Mendelian randomizations and colocalizations analysis in kilobases (for example `-500` will set a window of 500 kilobases arround the genomic position of each exposure of the 'input_exposures.txt file).  
@@ -94,16 +94,36 @@ _Optional: run AMANDE with the example data:_
 `./AMANDE.exe example_ENSEMBL_list.txt CAD_Harst_chr.txt -chr -eqtlgen -250 -0.001 -eQTLGen_CAD_250kb_p001`  
 `./AMANDE.exe example_INTERVAL_list.txt CAD_Harst_rs.txt -rs -interval -500 -0.05 -INTERVAL_CAD_500kb_p05`  
 
-
 # **Output:**  
 
-The 'summary.txt' file in the main folder includes key results for Mendelian randomizations and colocalizations analysis.
-The first column "Gene/Protein" is the ID of the exposure, and the second "IV" the number of instrumental variables used for the Mendelian randomization.  
+_**Summary of analysis**_
 
-Columns #3 to #8: Results of Mendelian Randomizations from the "MendelianRandomization" R package:
-`IVW_QQ_P
-IVW_Estimate
+The 'summary.txt' file in the main folder includes key results for the Mendelian randomizations and colocalizations:  
 
+Column #1 and #2:  
+`Gene/Protein`: ID of exposures._**Minimum 3 for Mendelian randomizations, and 4 for MRPRESSO.**_
+ `IV`: number of instrumental variables used for the Mendelian randomization.  
+
+Columns #3 to #8: Mendelian Randomizations (from the MendelianRandomization R package) :  
+`IVW_QQ_P`: Cochran's Q test P-value about the inverse-variance weighted estimate.  
+`IVW_Estimate`: inverse-variance weighted estimate.  
+`IVW_P`: inverse-variance weighted P-value.  
+`Egger_Estimate`: Egger estimate.  
+`Egger_P`: Egger P-value.  
+`Egger_Intercept_P`: Egger intercept P-value.  
+
+Columns #9 to #12: Bayesian colocalizations (from the hyprcoloc R package):  
+`Posterior_prob`: posterior probability.  
+`Regional_prob`: regional probability.  
+`Candidate_snp`: causal candidate snp.  
+`Posterior_explained_by_snp`: posterior probability of the causel candidate snp.  
+
+Columns #13 to #18: Evaluation of horizontal pleiotropy (from the MPRESSO R package): 
+`Global_Test_P`: P-value of the global test.
+`Estimate`: inverse-variance weighted estimate.
+`P`: inverse-variance weighted P-value.  
+`Estimate_Out-Corr`: inverse-variance weighted estimate after outlier(s) removal.
+`P_Out-Corr`: inverse-variance weighted P-value after outlier(s) removal.
 
 
 
