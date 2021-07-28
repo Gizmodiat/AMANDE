@@ -35,7 +35,7 @@ https://www.dropbox.com/s/8ex319rtvjmz4b0/GWAS_example.zip?dl=0
 Unzip it:  
 `unzip GWAS_example.zip`  
 
-# **Installation and configuration:**  
+# **Installation and configuration**  
 
 Clone AMANDE to your home folder:  
 `cd ~`  
@@ -72,7 +72,7 @@ The outcome '.txt' file prepared from GWAS summary statistics must contain with 
 _or_
 `rs1234 A T 0.8 0.002 1.23e-10`  
 
-# **Usage:**  
+# **Usage**  
 
 Run AMANDE with the following syntax:  
 `./AMANDE.exe <input_exposures.txt> <input_outcome.txt> [-rs | -chr] [-eqtlgen | -gtex | interval] [-window] [-pvalue] [-output]`  
@@ -87,7 +87,7 @@ _Optional: run AMANDE with the example data:_
 `./AMANDE.exe example_ENSEMBL_list.txt CAD_Harst_chr.txt -chr -eqtlgen -250 -0.001 -eQTLGen_CAD_250kb_p001`  
 `./AMANDE.exe example_INTERVAL_list.txt CAD_Harst_rs.txt -rs -interval -500 -0.05 -INTERVAL_CAD_500kb_p05`  
 
-# **Outputs:**  
+# **Outputs**  
 
 _**Summary of analysis**_
 
@@ -131,7 +131,7 @@ _Please note that harmonizations are performed after instrumental variables prun
 # **Don't forget to cite...**  
 _...and read these papers :blush:_
 
-_**Please cite all or a part of the following papers depending on exposure data used**_
+_**Please cite all or a part of the following papers depending on exposure data used:**_
 
 **LDlink:** Machiela and Chanock. LDlink: a web-based application for exploring population-specific haplotype structure and linking correlated alleles of possible functional variants. _Bioinformatics_, 2015.  
 
