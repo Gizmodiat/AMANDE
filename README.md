@@ -98,10 +98,10 @@ _Optional: run AMANDE with the example data:_
 
 _**Summary of analysis**_
 
-The 'summary.txt' file in the main folder includes key results for the Mendelian randomizations and colocalizations:  
+The 'summary.txt' file in the main folder presents several important data from the Mendelian randomizations and colocalizations analysis:  
 
 Column #1 and #2:  
-`Gene/Protein`: ID of exposures._**Minimum 3 for Mendelian randomizations, and 4 for MRPRESSO.**_
+`Gene/Protein`: ID of exposures._**Minimum 3 to perform Mendelian randomizations, and 4 for MRPRESSO.**_
  `IV`: number of instrumental variables used for the Mendelian randomization.  
 
 Columns #3 to #8: Mendelian Randomizations (from the MendelianRandomization R package) :  
@@ -118,12 +118,18 @@ Columns #9 to #12: Bayesian colocalizations (from the hyprcoloc R package):
 `Candidate_snp`: causal candidate snp.  
 `Posterior_explained_by_snp`: posterior probability of the causel candidate snp.  
 
-Columns #13 to #18: Evaluation of horizontal pleiotropy (from the MPRESSO R package): 
+Columns #13 to #18: Evaluation of horizontal pleiotropy (from the MPRESSO R package)._**Can be empty if there is less than 4 IVs**_: 
 `Global_Test_P`: P-value of the global test.
 `Estimate`: inverse-variance weighted estimate.
 `P`: inverse-variance weighted P-value.  
-`Estimate_Out-Corr`: inverse-variance weighted estimate after outlier(s) removal.
-`P_Out-Corr`: inverse-variance weighted P-value after outlier(s) removal.
+`Estimate_Out-Corr`: inverse-variance weighted estimate after outlier(s) removal.  
+`P_Out-Corr`: inverse-variance weighted P-value after outlier(s) removal.  
+`Distortion_Test_P`: distorsion test P-value. Can be empty if the outlier test does not detect which IV(s) is/are outlier(s).  
+
+Subfolders of AMANDE contain input files for each package, and output files generated (for example the inverse-variance weighted and Egger regression plots as .pdf files for Mendelian Randomizations analysis, or lists of outliers (if identified) for MR-PRESSO).  
+The subfolders 'IVs' details the pruning of instrumental variables, including potential IVs, list of IVs...  
+_**In case of error during pruning, pay attention to the 'log_SNPClip.txt' file to check if it is due to a LDlink server error**_
+
 
 
 
