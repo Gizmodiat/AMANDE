@@ -31,7 +31,6 @@ Unzip:  -rs | -chr: rsID format for outcome data.
 -window: window for IVs research (in kilobases, ex: 500).
 -pvalue: pvalue threshold for IVs pruning.
 -output: output prefix name. This name will be the name of the main output folder and the prefix for the sub-folders and files.
-
 `unzip snp151_for_AMANDE.zip`  
 
 _Optional:_  
@@ -54,8 +53,8 @@ Unzip it:
 #Edit the config.txt file with your own paths to the folders eQTLGen_for_AMANDE, GTEx_for_AMANDE, INTERVAL_for_AMANDE and snp151_for_AMANDE:  
 `gedit config.txt`  
 
-#Create a 'GTEx for AMANDE' folder. Then,  select the tissues of interest by  creating symbolic links in this folder from tissues of the 'GTEx_for_AMANDE' folder.  
-#To perform analysis on whole blood and testis for example, enter:  
+#Create a 'GTEx for AMANDE' folder. Then,  select the tissues of interest by  creating symbolic links in this folder from tissues of the 'GTEx_for_AMANDE' folder. 
+To perform analysis on whole blood and testis for example, enter:  
 `cd path_to_GTEx_for_AMANDE`  
 `ln -s path_to_GTExv8_AMANDE_FORMAT/GTEx_Analysis_v8_eQTL_all_associations_Whole_Blood`  
 `ln -s path_to_GTExv8_AMANDE_FORMAT/GTEx_Analysis_v8_eQTL_all_associations_Testis`  
@@ -65,24 +64,24 @@ _Optional:_
 Adjust settings for instrumental variables pruning (default settings are CEU population, LD r2 threshold <0.1 and MAF>0.01) by modifying `pop = "CEU", r2_threshold = "0.1", maf_threshold = "0.01"` in the LDlink.R file (population codes for LDlink are given below):  
 `gedit system/LDlink.R`  
 
-# **Input files:**  
- ./AMANDE.exe example_INTERVAL_list.txt CAD_Harst_rs.txt -rs -interval -500 -0.05 -INTERAVAL_CAD_500kb_p05
-AMANDE needs an input file for exposures and an input file for the outcome.  
+**Input files:**  
+AMANDE needs two input files, one for exposures and one for the outcome.  
 
-#_**Prepare an input file for exposures**_: genes (eQTLGen and GTEx) or proteins (INTERVAL):  
-
+_**Prepare input file for exposures**_: genes (eQTLGen and GTEx) or proteins (INTERVAL):  
 For genes, prepare a '.txt' file containing a list of the Ensembl ID of the exposures and the genomic positions (chromosome and position) from which perform the instrumental variables pruning and colocalization analysis: each line of the file will contain the Ensembl ID of an exposure and a genomic position like `ENSG00000042493_2_85645555` (see 'example_ENSEMBL_list.txt' in the 'example' folder).  
 
 For proteins, prepare an equivalent '.txt' file containning the ID of SOMAmers and proteins, and the genomic positions from which perform the instrumental variables pruning and colocalization analysis like `IL6R.8092.29.3_1_154377669` (see 'example_INTERVAL_list.txt' in the example folder).  
 
-#_**Prepare an input file for the outcome**_  
-The outcome '.txt' file prepared from GWAS summary statistics must contain with the 6 following columns: rs OR chr:position | Effect Allele | Other Allele | Beta | se | Pvalue (ex: chr1:1234 A T 0.8 0.002 1.23e-10 _or_ rs1234 A T 0.8 0.002 1.23e-10).  
-Posterior_prob
-# **Usage:**  
+_**Prepare an input file for the outcome**_  
+The outcome '.txt' file prepared from GWAS summary statistics must contain with the 6 following columns: rs OR chr:position | Effect Allele | Other Allele | Beta | se | Pvalue. Example:
+`chr1:1234 A T 0.8 0.002 1.23e-10`
+_or_
+`rs1234 A T 0.8 0.002 1.23e-10`  
 
-#Run AMANDE with the following syntax:  
+**Usage:**  
+
+Run AMANDE with the following syntax:  
 `./AMANDE.exe <input_exposures.txt> <input_outcome.txt> [-rs | -chr] [-eqtlgen | -gtex | interval] [-window] [-pvalue] [-output]`  
-Posterior_prob
 `-rs | -chr`: select the snp ID format of the outcome.  
 `-eqtlgen | -gtex | interval`: select the exposure of interest.  
 -`window`: set the window from which perform Mendelian randomizations and colocalizations analysis in kilobases (for example `-500` will set a window of 500 kilobases arround the genomic position of each exposure of the 'input_exposures.txt file).  
@@ -133,7 +132,14 @@ The subfolders of AMANDE contain input files for each package, and the output fi
 The subfolders 'IVs' provides details about the pruning of instrumental variables, including potential IVs, list of IVs...  
 _**In case of error during pruning, pay attention to the 'log_SNPClip.txt' file to check if it is due to a LDlink server error**_
 
-_Please note that the harmonization is performed after the instrumental variables pruning, so for input files used by the packages. Data about instrumental variables in the 'IVs' folders are thus not harmonized._ 
+_Please note that harmonization is performed after instrumental variables pruning, so for inputs used by the packages. Data about instrumental variables in the 'IVs' folders are thus not harmonized._ 
+
+# **Don't forget to cite:**  
+
+_**Please cite the following paper**_
+
+Machiela and Chanock. LDlink: a web-based application for exploring population-specific haplotype structure and linking correlated alleles of possible functional variants. _Bioinformatics_, 2015.  
+
 
 
 
