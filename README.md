@@ -64,7 +64,7 @@ _Optional:_
 Adjust settings for instrumental variables pruning (default settings are CEU population, LD r2 threshold <0.1 and MAF>0.01) by modifying `pop = "CEU", r2_threshold = "0.1", maf_threshold = "0.01"` in the LDlink.R file (population codes for LDlink are given below):  
 `gedit system/LDlink.R`  
 
-**Input files:**  
+# **Input files:**  
 AMANDE needs two input files, one for exposures and one for the outcome.  
 depends on
 _**Prepare input file for exposures**_: genes (eQTLGen and GTEx) or proteins (INTERVAL):  
@@ -78,7 +78,7 @@ The outcome '.txt' file prepared from GWAS summary statistics must contain with 
 _or_
 `rs1234 A T 0.8 0.002 1.23e-10`  
 
-**Usage:**  
+# **Usage:**  
 
 Run AMANDE with the following syntax:  
 `./AMANDE.exe <input_exposures.txt> <input_outcome.txt> [-rs | -chr] [-eqtlgen | -gtex | interval] [-window] [-pvalue] [-output]`  
