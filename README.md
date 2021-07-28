@@ -6,25 +6,25 @@ Install the following R packages: LDlinkR, MendelianRandomization, hyprcoloc, MR
 _**Retrieve a token for LDlink after registration at https://ldlink.nci.nih.gov/?tab=apiaccess**_  
 Keep your own registered token.  
 
-#Download eQTLGen data (4.5GB compressed) from:  
+Download eQTLGen data (4.5GB compressed) from:  
 https://www.dropbox.com/s/nf0rxyls5bgudsh/eQTLGen_for_AMANDE.zip?dl=0  
 Unzip:  
 `unzip eQTLGen_for_AMANDE.zip`  
 
-#Download GTEx v8 data:  
+Download GTEx v8 data:  
 _**Please contact me.**_  
 AMANDE uses data reformatted from the cis-eQTL associations tested in each tissue. Original data available in a requester pays bucket must be downloaded prior to use the reformatted GTEx data for AMANDE. More information here: https://gtexportal.org/home/datasets  
 After the download of original GTEx data, I will provide a compressed file "GTEx_for_AMANDE.zip" (49 tissues ~115GB compressed).  
 Unzip it:  
 `unzip GTEx_for_AMANDE.zip`
 
-#Download INTERVAL data (3,283 SOMAmers used to assay the 2,995 proteins ~2.4TB when uncompressed) from:  
+Download INTERVAL data (3,283 SOMAmers used to assay the 2,995 proteins ~2.4TB when uncompressed) from:  
 https://app.box.com/s/u3flbp13zjydegrxjb2uepagp1vb6bj2 or alternatively connect to the site using rclone or lftp. For instructions please contact Adam Butterworth (asb38@medschl.cam.ac.uk).  
 Download the entire dataset or protein(s) of interest if needed  (see Sun et al., Nature, 2018).  
 Each folder, which is named according to the ID of the SOMAmer, must be unzipped. In addition, the 22 gzipped files in each folder must be uncompressed to obtain '.tsv' text files.  
 _**Folders unzipped containing the ungzipped .tsv files must be located in a folder "INTERVAL_for_AMANDE".**_
 
-#Download snp151 data (9.64GB compressed) from:  
+Download snp151 data (9.64GB compressed) from:  
 https://www.dropbox.com/s/6crvgalonj68q6u/snp151_for_AMANDE.zip?dl=0  
 Unzip:  -rs | -chr: rsID format for outcome data. 
 -eqtlgen | -gtex | interval: exposure of interest.
@@ -41,19 +41,19 @@ Unzip it:
 
 # **Installation and configuration:**  
 
-#Clone AMANDE to your home folder:  
+Clone AMANDE to your home folder:  
 `cd ~`  
 `git clone https://github.com/Gizmodiat/AMANDE.git`  
 `unzip AMANDE.zip`  
 `cd AMANDE`  
 
-#Replace the example token `token="enter_yours"` with your own token in the LDlink.R file:  
+Replace the example token `token="enter_yours"` with your own token in the LDlink.R file:  
 `gedit system/LDlink.R`  
 
-#Edit the config.txt file with your own paths to the folders eQTLGen_for_AMANDE, GTEx_for_AMANDE, INTERVAL_for_AMANDE and snp151_for_AMANDE:  
+Edit the config.txt file with your own paths to the folders eQTLGen_for_AMANDE, GTEx_for_AMANDE, INTERVAL_for_AMANDE and snp151_for_AMANDE:  
 `gedit config.txt`  
 
-#Create a 'GTEx for AMANDE' folder. Then,  select the tissues of interest by  creating symbolic links in this folder from tissues of the 'GTEx_for_AMANDE' folder. 
+Create a 'GTEx for AMANDE' folder. Then,  select the tissues of interest by  creating symbolic links in this folder from tissues of the 'GTEx_for_AMANDE' folder. 
 To perform analysis on whole blood and testis for example, enter:  
 `cd path_to_GTEx_for_AMANDE`  
 `ln -s path_to_GTExv8_AMANDE_FORMAT/GTEx_Analysis_v8_eQTL_all_associations_Whole_Blood`  
@@ -116,7 +116,7 @@ Columns #9 to #12: Bayesian colocalizations (from the hyprcoloc R package):
 `Candidate_snp`: causal candidate snp.  
 `Posterior_explained_by_snp`: posterior probability of the causel candidate snp.  
 
-Columns #13 to #18: Evaluation of horizontal pleiotropy (from the MPRESSO R package)._**Can be empty if there is less than 4 IVs**_: 
+Columns #13 to #18: Evaluation of horizontal pleiotropy (from the MPRESSO R package)._**Can be empty if there are less than 4 IVs**_: 
 `Global_Test_P`: P-value of the global test.
 `Estimate`: inverse-variance weighted estimate.
 `P`: inverse-variance weighted P-value.  
@@ -141,7 +141,16 @@ _**Please cite all or a part of the following paper depending on exposure data u
 
 **MendelianRandomization:** Yavorska and Burgess. MendelianRandomization: an R package for performing Mendelian randomization analyses using summarized data. _Int J Epidemiol_, 2017.  
 
-**MR-PRESSO:** Verbanck et al. Detection of widespread horizontal pleiotropy in causal relationships inferred from Mendelian randomization between complex traits and diseases. _Nat Genet_, 2018.  
+**hyprcoloc:**  Foley et al. A fast and efficient colocalization algorithm for identifying shared genetic risk factors across multiple traits. _Nat Commun._, 2021.  
+
+**MR-PRESSO:** Verbanck et al. Detection of widespread horizontal pleiotropy in causal relationships inferred from Mendelian randomization between complex traits and diseases. _Nat Genet._, 2018.  
+
+**eQTLGen:** Võsa et al. Unraveling the polygenic architecture of complex traits using blood eQTL metaanalysis. _bioRxiv_, 2018.  
+
+**GTEx:** The GTEx Consortium. The GTEx Consortium atlas of genetic regulatory effects across human tissues. _Science_, 2020.  
+
+**INTERVAL:** Sun et al.  Genomic atlas of the human plasma proteome. _Nature_, 2018.
+
 
 
 
