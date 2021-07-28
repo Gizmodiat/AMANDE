@@ -1,7 +1,7 @@
 # Automated Mendelian rAndomization aND bayEsian colocalization (AMANDE)
 AMANDE performs automated Mendelian randomizations, Bayesian colocalizations and horizontal pleiotropy detections from genetic association studies.
 
-# **Prerequired:**  
+# **Prerequired**  
 Install the following R packages: LDlinkR, MendelianRandomization, hyprcoloc, MRPRESSO.  
 _**Retrieve a token for LDlink after registration at https://ldlink.nci.nih.gov/?tab=apiaccess**_  
 Keep your own registered token.  
@@ -59,7 +59,7 @@ _Optional:_
 Adjust settings for instrumental variables pruning (default settings are CEU population, LD r2 threshold <0.1 and MAF>0.01) by modifying `pop = "CEU", r2_threshold = "0.1", maf_threshold = "0.01"` in the LDlink.R file (population codes for LDlink are given below):  
 `gedit system/LDlink.R`  
 
-# **Input files:**  
+# **Input files**  
 AMANDE needs two input files, one for exposures and one for the outcome.  
 _**Prepare input file for exposures**_: genes (eQTLGen and GTEx) or proteins (INTERVAL):  
 For genes, prepare a '.txt' file containing a list of the Ensembl ID of the exposures and the genomic positions (chromosome and position) from which perform the instrumental variables pruning and colocalization analysis: each line of the file will contain the Ensembl ID of an exposure and a genomic position like `ENSG00000042493_2_85645555` (see 'example_ENSEMBL_list.txt' in the 'example' folder).  
