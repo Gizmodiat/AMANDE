@@ -126,9 +126,14 @@ Columns #13 to #18: Evaluation of horizontal pleiotropy (from the MPRESSO R pack
 `P_Out-Corr`: inverse-variance weighted P-value after outlier(s) removal.  
 `Distortion_Test_P`: distorsion test P-value. Can be empty if the outlier test does not detect which IV(s) is/are outlier(s).  
 
-Subfolders of AMANDE contain input files for each package, and output files generated (for example the inverse-variance weighted and Egger regression plots as .pdf files for Mendelian Randomizations analysis, or lists of outliers (if identified) for MR-PRESSO).  
-The subfolders 'IVs' details the pruning of instrumental variables, including potential IVs, list of IVs...  
+_**Details of analysis**_
+
+The subfolders of AMANDE contain input files for each package, and the output files generated (for example the inverse-variance weighted and Egger regression plots as '.pdf' files for Mendelian Randomizations, or a list of outliers (if identified) for MR-PRESSO).  
+
+The subfolders 'IVs' provides details about the pruning of instrumental variables, including potential IVs, list of IVs...  
 _**In case of error during pruning, pay attention to the 'log_SNPClip.txt' file to check if it is due to a LDlink server error**_
+
+_Please note that the harmonization is performed after the instrumental variables pruning, so for input files used by the packages. Data about instrumental variables in the 'IVs' folders are thus not harmonized._ 
 
 
 
