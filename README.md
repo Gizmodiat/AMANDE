@@ -135,7 +135,7 @@ _Please note that harmonization is performed after instrumental variables prunin
 
 # **Don't forget to cite:**  
 
-_**Please cite all or a part of the following paper depending on exposure data used**_
+_**Please cite all or a part of the following papers depending on exposure data used**_
 
 **LDlink:** Machiela and Chanock. LDlink: a web-based application for exploring population-specific haplotype structure and linking correlated alleles of possible functional variants. _Bioinformatics_, 2015.  
 
