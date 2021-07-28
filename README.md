@@ -126,7 +126,7 @@ The subfolders of AMANDE contain input files for each package, and the output fi
 The subfolders 'IVs' provides details about the pruning of instrumental variables, including potential IVs, list of IVs...  
 _**In case of error during pruning, pay attention to the 'log_SNPClip.txt' file to check if it is due to a LDlink server error**_
 
-_Please note that harmonization is performed after instrumental variables pruning, so for inputs used by the packages. Data about instrumental variables in the 'IVs' folders are thus not harmonized._ 
+_Please note that harmonizations are performed after instrumental variables pruning, so for inputs used packages. Data about instrumental variables in the 'IVs' folders are thus not harmonized._ 
 
 # **Don't forget to cite:**  
 
