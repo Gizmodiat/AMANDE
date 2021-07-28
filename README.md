@@ -46,7 +46,7 @@ Clone AMANDE to your home folder:
 Replace the example token `token="enter_yours"` with your own token in the LDlink.R file:  
 `gedit system/LDlink.R`  
 
-Create a 'GTEx_for_AMANDE' folder. Select tissues of interest by  creating symbolic links in this folder from tissues of the 'GTEx_for_AMANDE' folder. 
+Create a 'GTEx_for_AMANDE' folder. Select tissues of interest by  creating symbolic links in this folder from tissues in the 'GTEx_for_AMANDE' folder. 
 To perform analysis on whole blood and testis for example, enter:  
 `cd path_to_GTEx_for_AMANDE`  
 `ln -s path_to_GTExv8_AMANDE_FORMAT/GTEx_Analysis_v8_eQTL_all_associations_Whole_Blood`  
