@@ -129,7 +129,7 @@ _**In case of error during pruning, pay attention to the 'log_SNPClip.txt' file 
 _Please note that harmonizations are performed after instrumental variables pruning, so for inputs used packages. Data about instrumental variables in the 'IVs' folders are thus not harmonized._ 
 
 # **Don't forget to cite...**  
-_...or read these papers :blush:_
+_...and read these papers :blush:_
 
 _**Please cite all or a part of the following papers depending on exposure data used**_
 
