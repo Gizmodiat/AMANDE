@@ -66,7 +66,7 @@ Adjust settings for instrumental variables pruning (default settings are CEU pop
 
 **Input files:**  
 AMANDE needs two input files, one for exposures and one for the outcome.  
-
+depends on
 _**Prepare input file for exposures**_: genes (eQTLGen and GTEx) or proteins (INTERVAL):  
 For genes, prepare a '.txt' file containing a list of the Ensembl ID of the exposures and the genomic positions (chromosome and position) from which perform the instrumental variables pruning and colocalization analysis: each line of the file will contain the Ensembl ID of an exposure and a genomic position like `ENSG00000042493_2_85645555` (see 'example_ENSEMBL_list.txt' in the 'example' folder).  
 
@@ -136,9 +136,16 @@ _Please note that harmonization is performed after instrumental variables prunin
 
 # **Don't forget to cite:**  
 
-_**Please cite the following paper**_
+_**Please cite all or a part of the following paper depending on exposure data used**_
 
-Machiela and Chanock. LDlink: a web-based application for exploring population-specific haplotype structure and linking correlated alleles of possible functional variants. _Bioinformatics_, 2015.  
+**LDlink:** Machiela and Chanock. LDlink: a web-based application for exploring population-specific haplotype structure and linking correlated alleles of possible functional variants. _Bioinformatics_, 2015.  
+
+**MendelianRandomization:** Yavorska and Burgess. MendelianRandomization: an R package for performing Mendelian randomization analyses using summarized data. _Int J Epidemiol_, 2017.  
+
+**MR-PRESSO:** Verbanck et al. Detection of widespread horizontal pleiotropy in causal relationships inferred from Mendelian randomization between complex traits and diseases. _Nat Genet_, 2018.  
+
+
+
 
 
 
