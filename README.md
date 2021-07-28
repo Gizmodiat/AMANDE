@@ -22,7 +22,7 @@ Download INTERVAL data (3,283 SOMAmers used to assay the 2,995 proteins ~2.4TB w
 https://app.box.com/s/u3flbp13zjydegrxjb2uepagp1vb6bj2 or alternatively connect to the site using rclone or lftp. For instructions please contact Adam Butterworth (asb38@medschl.cam.ac.uk).  
 Download the entire dataset or protein(s) of interest if needed  (see Sun et al. _Nature_, 2018).  
 Each folder, which is named according to the ID of the SOMAmer, must be unzipped. In addition, the 22 gzipped files in each folder must be uncompressed to obtain '.tsv' text files.  
-_**Create a folder named 'INTERVAL_for_AMANDE' and put folders unzipped containing the ungzipped '.tsv' files inside it**_
+_**Create a folder named 'INTERVAL_for_AMANDE' and put folders unzipped containing the ungzipped '.tsv' files inside it.**_
 
 Download snp151 data (9.64GB compressed) from:  
 https://www.dropbox.com/s/6crvgalonj68q6u/snp151_for_AMANDE.zip?dl=0  
@@ -128,7 +128,8 @@ _**In case of error during pruning, pay attention to the 'log_SNPClip.txt' file 
 
 _Please note that harmonizations are performed after instrumental variables pruning, so for inputs used packages. Data about instrumental variables in the 'IVs' folders are thus not harmonized._ 
 
-# **Don't forget to cite:**  
+# **Don't forget to cite...**  
+_...or read these papers :hankey:_
 
 _**Please cite all or a part of the following papers depending on exposure data used**_
 
