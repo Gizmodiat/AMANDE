@@ -22,15 +22,11 @@ Download INTERVAL data (3,283 SOMAmers used to assay the 2,995 proteins ~2.4TB w
 https://app.box.com/s/u3flbp13zjydegrxjb2uepagp1vb6bj2 or alternatively connect to the site using rclone or lftp. For instructions please contact Adam Butterworth (asb38@medschl.cam.ac.uk).  
 Download the entire dataset or protein(s) of interest if needed  (see Sun et al., Nature, 2018).  
 Each folder, which is named according to the ID of the SOMAmer, must be unzipped. In addition, the 22 gzipped files in each folder must be uncompressed to obtain '.tsv' text files.  
-_**Create a folder named 'INTERVAL_for_AMANDE' and put folders unzipped containing the ungzipped .tsv files.**_
+_**Create a folder named 'INTERVAL_for_AMANDE' and put folders unzipped containing the ungzipped .tsv files into it**_
 
 Download snp151 data (9.64GB compressed) from:  
 https://www.dropbox.com/s/6crvgalonj68q6u/snp151_for_AMANDE.zip?dl=0  
-Unzip:  -rs | -chr: rsID format for outcome data. 
--eqtlgen | -gtex | interval: exposure of interest.
--window: window for IVs research (in kilobases, ex: 500).
--pvalue: pvalue threshold for IVs pruning.
--output: output prefix name. This name will be the name of the main output folder and the prefix for the sub-folders and files.
+Unzip:  
 `unzip snp151_for_AMANDE.zip`  
 
 _Optional:_  
