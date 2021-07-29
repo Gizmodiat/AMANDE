@@ -9,6 +9,8 @@ Install the following R packages: LDlinkR, MendelianRandomization, hyprcoloc, MR
 _**Retrieve a token for LDlink after registration at https://ldlink.nci.nih.gov/?tab=apiaccess**_  
 Keep your own registered token.  
 
+Ensure python2 is installed.  
+
 Download eQTLGen data (4.5GB compressed) from:  
 https://www.dropbox.com/s/nf0rxyls5bgudsh/eQTLGen_for_AMANDE.zip?dl=0  
 Unzip:  
