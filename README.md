@@ -112,7 +112,7 @@ Columns #9 to #12: Bayesian colocalizations (from the hyprcoloc R package):  _**
 `Candidate_snp`: causal candidate snp.  
 `Posterior_explained_by_snp`: posterior probability of the causal candidate snp.  
 
-Columns #13 to #18: Evaluation of horizontal pleiotropy (from the MPRESSO R package). _**Can be empty if there are less than 4 IVs**_: 
+Columns #13 to #18: Evaluation of horizontal pleiotropy (from the MPRESSO R package). _**Can be empty if there are less than 4 IVs**_:  
 `Global_Test_P`: P-value of the global test.  
 `Estimate`: inverse-variance weighted estimate.  
 `P`: inverse-variance weighted P-value.  
