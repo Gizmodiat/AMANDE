@@ -15,7 +15,7 @@ Unzip:
 `unzip eQTLGen_for_AMANDE.zip`  
 
 Download GTEx v8 data:  
-_**Please contact me.**_  
+_**Please contact me (arnaud.chignon@hotmail.com).**_  
 AMANDE uses data reformatted from the cis-eQTL associations tested in each tissue. Original data available in a requester pays bucket must be downloaded prior to use the reformatted GTEx data for AMANDE. More information here: https://gtexportal.org/home/datasets  
 After the download of original GTEx data, I will provide a compressed file 'GTExv8_AMANDE_FORMAT.zip' (49 tissues ~115GB compressed).  
 Unzip this file:  
