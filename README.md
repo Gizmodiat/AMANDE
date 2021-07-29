@@ -83,7 +83,7 @@ Run AMANDE with the following syntax:
 `-rs | -chr`: select the snp ID format of outcome.  
 `-eqtlgen | -gtex | interval`: select the exposure of interest.  
 -`window`: set the window from which performs Mendelian randomizations and colocalizations in kilobases (for example `-500` will set a window of 500 kilobases arround the genomic positions entered for exposures in the 'input_exposures.txt' file).  
-`-pvalue`: the P-value threshold for associations between snps and exposures for IVs pruning.  
+`-pvalue`: the P-value threshold for the associations between snps and exposures for IVs pruning.  
 `-output`: the output prefix name. This name will be the name of the main output folder and the prefix of sub-folders and files.  
 
 _Example for eQTLGen:_  
