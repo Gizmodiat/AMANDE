@@ -124,7 +124,7 @@ _**Details of analysis**_
 Subfolders of AMANDE contain input files for each package, and output files generated (for example the inverse-variance weighted and Egger regression plots as '.pdf' files for Mendelian Randomizations, and a list of outliers if identified by MR-PRESSO).  
 
 The subfolders 'IVs' provides details about the IVs pruning, including potential IVs, list of IVs...  
-_**In case of error during pruning, pay attention to the 'log_SNPClip.txt' file to check if it is due to a LDlink server error**_
+_**In case of error during pruning, pay attention to the 'log_SNPClip.txt' file to check if it is due to an error in the LDlink server.**_
 
 _Please note that harmonizations are performed after IVs pruning, so for inputs files of packages. Thus, data about IVs in the 'IVs' folders are not harmonized._ 
 
