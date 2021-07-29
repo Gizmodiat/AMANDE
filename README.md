@@ -55,6 +55,8 @@ To perform analysis on whole blood and testis for example, enter:
 `ln -s path_to_GTExv8_AMANDE_FORMAT/GTEx_Analysis_v8_eQTL_all_associations_Testis`  
 
 Edit the config.txt file with your own paths to the folders eQTLGen_for_AMANDE, GTEx_for_AMANDE, INTERVAL_for_AMANDE and snp151_for_AMANDE:  
+`cd ~`  
+`cd AMANDE`  
 `gedit config.txt`  
 
 _Optional:_  
