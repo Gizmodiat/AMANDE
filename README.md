@@ -85,7 +85,7 @@ Run AMANDE with the following syntax:
 `-pvalue`: the P-value association threshold between snps and exposures used for IVs pruning.  
 `-output`: the output prefix name. This name will be the name of the main output folder and the prefix of sub-folders and files.  
 
-_For example for eQTLGen:_  
+_Example for eQTLGen:_  
 `./AMANDE.exe example_ENSEMBL_list.txt CAD.txt -chr -eqtlgen -250 -0.001 -eQTLGen_CAD_250kb_p001`  
 
 # **Outputs**  
