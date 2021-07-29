@@ -1,5 +1,7 @@
 # Automated Mendelian rAndomization aND bayEsian colocalization (AMANDE)
-AMANDE performs automated Mendelian randomizations, Bayesian colocalizations and horizontal pleiotropy detections from genetic association studies.
+AMANDE performs automated Mendelian randomizations, Bayesian colocalizations and horizontal pleiotropy detections from genetic association studies.  
+AMANDE uses eQTLGen, GTEx V8 and INTERVAL as exposures and Genome-Wide association studies as outomes. Harmonization for alleles is performed automatically.
+AMANDE is designed for **hg19/build37**. 
 
 # **Prerequired**  
 Install the following R packages: LDlinkR, MendelianRandomization, hyprcoloc, MRPRESSO.  
@@ -127,7 +129,7 @@ The subfolders of AMANDE contain input files for each package, and the output fi
 The subfolders 'IVs' provides details about the pruning of instrumental variables, including potential IVs, list of IVs...  
 _**In case of error during pruning, pay attention to the 'log_SNPClip.txt' file to check if it is due to a LDlink server error**_
 
-_Please note that harmonizations are performed after instrumental variables pruning, so for inputs used packages. Data about instrumental variables in the 'IVs' folders are thus not harmonized._ 
+_Please note that harmonizations are performed after instrumental variables pruning, so for the inputs of packages. Data about instrumental variables in the 'IVs' folders are thus not harmonized._ 
 
 # **Don't forget to cite...**  
 _...and read these papers :blush:_
@@ -146,13 +148,4 @@ _**Please cite all or a part of the following papers depending on exposure data 
 
 **GTEx:** The GTEx Consortium. The GTEx Consortium atlas of genetic regulatory effects across human tissues. _Science_, 2020.  
 
-**INTERVAL:** Sun et al.  Genomic atlas of the human plasma proteome. _Nature_, 2018.
-
-
-
-
-
-
-
-
-
+**INTERVAL:** Sun et al.  Genomic atlas of the human plasma proteome. _Nature_, 2018. 
