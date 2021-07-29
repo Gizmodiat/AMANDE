@@ -1,6 +1,6 @@
 # Automated Mendelian rAndomization aND bayEsian colocalization (AMANDE)
 AMANDE performs automated Mendelian randomizations, Bayesian colocalizations and horizontal pleiotropy detections from genetic association studies.  
-AMANDE uses eQTLGen, GTEx V8 and INTERVAL as exposures and Genome-Wide association studies as outomes. Harmonization for alleles is performed automatically.
+AMANDE uses eQTLGen, GTEx V8 and INTERVAL as exposures and Genome-Wide association studies (GWAS) as outomes. Instrumental variables (IVs) pruning and harmonizations for alleles are performed automatically.
 AMANDE is designed for **hg19/build37**. 
 
 # **Prerequired**  
@@ -16,25 +16,25 @@ Unzip:
 Download GTEx v8 data:  
 _**Please contact me.**_  
 AMANDE uses data reformatted from the cis-eQTL associations tested in each tissue. Original data available in a requester pays bucket must be downloaded prior to use the reformatted GTEx data for AMANDE. More information here: https://gtexportal.org/home/datasets  
-After the download of original GTEx data, I will provide a compressed file "GTEx_for_AMANDE.zip" (49 tissues ~115GB compressed).  
-Unzip the file:  
-`unzip GTEx_for_AMANDE.zip`
+After the download of original GTEx data, I will provide a compressed file 'GTExv8_AMANDE_FORMAT.zip' (49 tissues ~115GB compressed).  
+Unzip this file:  
+`unzip GTExv8_AMANDE_FORMAT.zip`
 
 Download INTERVAL data (3,283 SOMAmers used to assay the 2,995 proteins ~2.4TB when uncompressed) from:  
 https://app.box.com/s/u3flbp13zjydegrxjb2uepagp1vb6bj2 or alternatively connect to the site using rclone or lftp. For instructions please contact Adam Butterworth (asb38@medschl.cam.ac.uk).  
 Download the entire dataset or protein(s) of interest if needed  (see Sun et al. _Nature_, 2018).  
-Each folder, which is named according to the ID of the SOMAmer, must be unzipped. In addition, the 22 gzipped files in each folder must be uncompressed to obtain '.tsv' text files.  
-_**Create a folder named 'INTERVAL_for_AMANDE' and put folders unzipped containing the ungzipped '.tsv' files inside it.**_
+Each folder, which is named according to the ID of the SOMAmer, must be unzipped. In addition, the 22 gzipped files in folders must be uncompressed to obtain '.tsv' text files.  
+_**Create a folder named 'INTERVAL_for_AMANDE' and put folders unzipped containing the ungzipped '.tsv' files inside it.**_  
 
 Download snp151 data (9.64GB compressed) from:  
 https://www.dropbox.com/s/6crvgalonj68q6u/snp151_for_AMANDE.zip?dl=0  
-Unzip it:  
+Unzip:  
 `unzip snp151_for_AMANDE.zip`  
 
 _Optional:_  
 Download an example of outcome data (164MB compressed) for genetic associations with coronary artery disease (van der Harst and Niek Verweij. _Circulation Research_, 2018) from:  
 https://www.dropbox.com/s/8ex319rtvjmz4b0/GWAS_example.zip?dl=0  
-Unzip it:  
+Unzip:  
 `unzip GWAS_example.zip`  
 
 # **Installation and configuration**  
@@ -48,7 +48,7 @@ Clone AMANDE to your home folder:
 Replace the example token `token="enter_yours"` with your own token in the LDlink.R file:  
 `gedit system/LDlink.R`  
 
-Create a 'GTEx_for_AMANDE' folder. Select tissues of interest by  creating symbolic links in this folder from tissues in the 'GTEx_for_AMANDE' folder. 
+Create a 'GTEx_for_AMANDE' folder. Select tissues of interest by  creating symbolic links in this folder from tissues in the 'GTExv8_AMANDE_FORMAT' folder. 
 To perform analysis on whole blood and testis for example, enter:  
 `cd path_to_GTEx_for_AMANDE`  
 `ln -s path_to_GTExv8_AMANDE_FORMAT/GTEx_Analysis_v8_eQTL_all_associations_Whole_Blood`  
@@ -58,19 +58,19 @@ Edit the config.txt file with your own paths to the folders eQTLGen_for_AMANDE, 
 `gedit config.txt`  
 
 _Optional:_  
-Adjust settings for instrumental variables pruning (default settings are CEU population, LD r2 threshold <0.1 and MAF>0.01) by modifying `pop = "CEU", r2_threshold = "0.1", maf_threshold = "0.01"` in the LDlink.R file (population codes for LDlink are given below):  
+Adjust settings for IVs pruning (default settings are CEU population, LD r2 threshold <0.1 and MAF>0.01) by modifying `pop = "CEU", r2_threshold = "0.1", maf_threshold = "0.01"` in the LDlink.R file (population codes for LDlink are given below):  
 `gedit system/LDlink.R`  
 
 # **Input files**  
-AMANDE needs two input files, one for exposures and one for the outcome.  
+AMANDE needs two input files: one for exposures and one for the outcome.  
 
-_**Prepare input file for exposures**_: genes (eQTLGen and GTEx) or proteins (INTERVAL):  
-For genes, prepare a '.txt' file containing a list of the Ensembl ID of the exposures and the genomic positions (chromosome and position) from which perform the instrumental variables pruning and colocalization analysis: each line of the file will contain the Ensembl ID of an exposure and a genomic position like `ENSG00000042493_2_85645555` (see 'example_ENSEMBL_list.txt' in the 'example' folder).  
+_**Prepare an input file for exposures**_: genes (eQTLGen or GTEx) or proteins (INTERVAL):  
+For genes, prepare a '.txt' file containing a list of the Ensembl ID of the exposures and the genomic positions (chromosome and position) from which perform the IVs pruning and colocalizations analysis: each line of this file will contain the Ensembl ID of an exposure and a genomic position like `ENSG00000042493_2_85645555` (see 'example_ENSEMBL_list.txt' in the 'example' folder).  
 
-For proteins, prepare an equivalent '.txt' file containning the ID of SOMAmers and proteins, and the genomic positions from which perform the instrumental variables pruning and colocalization analysis like `IL6R.8092.29.3_1_154377669` (see 'example_INTERVAL_list.txt' in the example folder).  
+For proteins, prepare an equivalent '.txt' file containning the ID of SOMAmers and proteins, and the genomic positions like `IL6R.8092.29.3_1_154377669` (see 'example_INTERVAL_list.txt' in the example folder).  
 
-_**Prepare input file for the outcome**_  
-The outcome '.txt' file prepared from GWAS summary statistics must contain with the 6 following columns: rs OR chr:position | Effect Allele | Other Allele | Beta | se | Pvalue. Example:
+_**Prepare an input file for the outcome**_  
+The outcome '.txt' file is prepared from GWAS summary statistics, and must contain the 6 following columns: rs OR chr:position | Effect Allele | Other Allele | Beta | se | Pvalue. Example:
 `chr1:1234 A T 0.8 0.002 1.23e-10`
 _or_
 `rs1234 A T 0.8 0.002 1.23e-10`  
@@ -79,10 +79,10 @@ _or_
 
 Run AMANDE with the following syntax:  
 `./AMANDE.exe <input_exposures.txt> <input_outcome.txt> [-rs | -chr] [-eqtlgen | -gtex | interval] [-window] [-pvalue] [-output]`  
-`-rs | -chr`: select the snp ID format of the outcome.  
+`-rs | -chr`: select the snp ID format of outcome.  
 `-eqtlgen | -gtex | interval`: select the exposure of interest.  
--`window`: set the window from which perform Mendelian randomizations and colocalizations analysis in kilobases (for example `-500` will set a window of 500 kilobases arround the genomic position of each exposure of the 'input_exposures.txt file).  
-`-pvalue`: the pvalue threshold for instrumental variables pruning.  
+-`window`: set the window from which performs Mendelian randomizations and colocalizations in kilobases (for example `-500` will set a window of 500 kilobases arround the genomic positions entered for exposures in the 'input_exposures.txt file).  
+`-pvalue`: the association P-value threshold for used for  for association association threshold for IVs pruning.  
 `-output`: the output prefix name. This name will be the name of the main output folder and the prefix of sub-folders and files.  
 
 _Optional: run AMANDE with the example data:_  
