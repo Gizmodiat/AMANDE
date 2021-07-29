@@ -39,10 +39,8 @@ Unzip:
 Clone AMANDE to your home folder and give permissions:  
 `cd ~`  
 `git clone https://github.com/Gizmodiat/AMANDE.git`  
-`chmod 777 AMANDE`  
+`chmod -R 777 AMANDE`  
 `cd AMANDE`  
-`chmod 777 AMANDE.exe`  
-`chmod 777 system/*.*`  
 
 Replace the example token `token="enter_yours"` with your own token in the LDlink.R file:  
 `gedit system/LDlink.R`  
