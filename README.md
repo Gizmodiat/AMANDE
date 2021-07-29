@@ -69,7 +69,7 @@ For genes, prepare a '.txt' file containing a list of the Ensembl ID of the expo
 For proteins, prepare an equivalent '.txt' file containning the ID of SOMAmers and proteins, and the genomic positions like `IL6R.8092.29.3_1_154377669` (see 'example_INTERVAL_list.txt' in the example folder).  
 
 _**Prepare an input file for the outcome**_  
-The outcome '.txt' file is prepared from GWAS summary statistics, and must contain the 6 following columns: rs OR chr:position | Effect Allele | Other Allele | Beta | se | Pvalue. Example:
+The outcome '.txt' file is prepared from GWAS summary statistics, and must contain the 6 following columns: rs _or_ chr:position | Effect Allele | Other Allele | Beta | se | Pvalue. Example:
 `chr1:1234 A T 0.8 0.002 1.23e-10`
 _or_
 `rs1234 A T 0.8 0.002 1.23e-10`  
