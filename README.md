@@ -146,7 +146,7 @@ _**Please cite all or a part of the following papers depending on exposures data
 
 **INTERVAL:** Sun et al.  Genomic atlas of the human plasma proteome. _Nature_, 2018. 
 
-_LDlink population codes:_  
+**LDlink population codes:**  
 pop_code, super_pop_code, pop_name:  
 `ALL            ALL                           ALL POPULATIONS`  
 `AFR            AFR                                   AFRICAN`  
