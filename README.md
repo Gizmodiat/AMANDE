@@ -149,36 +149,36 @@ _**Please cite all or a part of the following papers depending on exposures data
 **INTERVAL:** Sun et al.  Genomic atlas of the human plasma proteome. _Nature_, 2018. 
 
 
-`pop_code       super_pop_code                       pop_name`
-`ALL            ALL                           ALL POPULATIONS`
-`AFR            AFR                                   AFRICAN` 
-`YRI            AFR                  Yoruba in Ibadan, Nigera`
-`LWK            AFR                    Luhya in Webuye, Kenya`
-`GWD            AFR                 Gambian in Western Gambia`
-`MSL            AFR                     Mende in Sierra Leone`
-`ESN            AFR                            Esan in Nigera`
-`ASW            AFR   Americans of African Ancestry in SW USA`
-`ACB            AFR           African Carribbeans in Barbados`
-`AMR            AMR                         AD MIXED AMERICAN`
-`MXL            AMR    Mexican Ancestry from Los Angeles, USA`
-`PUR            AMR            Puerto Ricans from Puerto Rico`
-`CLM            AMR        Colombians from Medellin, Colombia`
-`PEL            AMR                 Peruvians from Lima, Peru`
-`EAS            EAS                                EAST ASIAN`
-`CHB            EAS              Han Chinese in Bejing, China`
-`JPT            EAS                  Japanese in Tokyo, Japan`
-`CHS            EAS                      Southern Han Chinese`
-`CDX            EAS       Chinese Dai in Xishuangbanna, China`
-`KHV            EAS         Kinh in Ho Chi Minh City, Vietnam`
-`EUR            EUR                                  EUROPEAN`
-`CEU            EUR Utah Residents from North and West Europe`
-`TSI            EUR                         Toscani in Italia`
-`FIN            EUR                        Finnish in Finland`
-`GBR            EUR           British in England and Scotland`
-`IBS            EUR               Iberian population in Spain`
-`SAS            SAS                               SOUTH ASIAN`
-`GIH            SAS  Gujarati Indian from Houston, Texas, USA`
-`PJL            SAS             Punjabi from Lahore, Pakistan`
-`BEB            SAS                   Bengali from Bangladesh`
-`STU            SAS              Sri Lankan Tamil from the UK`
-`ITU            SAS                 Indian Telugu from the UK`
+`pop_code       super_pop_code                       pop_name`  
+`ALL            ALL                           ALL POPULATIONS`  
+`AFR            AFR                                   AFRICAN`  
+`YRI            AFR                  Yoruba in Ibadan, Nigera`  
+`LWK            AFR                    Luhya in Webuye, Kenya`  
+`GWD            AFR                 Gambian in Western Gambia`  
+`MSL            AFR                     Mende in Sierra Leone`  
+`ESN            AFR                            Esan in Nigera`  
+`ASW            AFR   Americans of African Ancestry in SW USA`  
+`ACB            AFR           African Carribbeans in Barbados`  
+`AMR            AMR                         AD MIXED AMERICAN`  
+`MXL            AMR    Mexican Ancestry from Los Angeles, USA`  
+`PUR            AMR            Puerto Ricans from Puerto Rico`  
+`CLM            AMR        Colombians from Medellin, Colombia`  
+`PEL            AMR                 Peruvians from Lima, Peru`  
+`EAS            EAS                                EAST ASIAN`  
+`CHB            EAS              Han Chinese in Bejing, China`  
+`JPT            EAS                  Japanese in Tokyo, Japan`  
+`CHS            EAS                      Southern Han Chinese`  
+`CDX            EAS       Chinese Dai in Xishuangbanna, China`  
+`KHV            EAS         Kinh in Ho Chi Minh City, Vietnam`  
+`EUR            EUR                                  EUROPEAN`  
+`CEU            EUR Utah Residents from North and West Europe`  
+`TSI            EUR                         Toscani in Italia`  
+`FIN            EUR                        Finnish in Finland`  
+`GBR            EUR           British in England and Scotland`  
+`IBS            EUR               Iberian population in Spain`  
+`SAS            SAS                               SOUTH ASIAN`  
+`GIH            SAS  Gujarati Indian from Houston, Texas, USA`  
+`PJL            SAS             Punjabi from Lahore, Pakistan`  
+`BEB            SAS                   Bengali from Bangladesh`  
+`STU            SAS              Sri Lankan Tamil from the UK`  
+`ITU            SAS                 Indian Telugu from the UK`  
