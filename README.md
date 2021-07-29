@@ -73,7 +73,7 @@ The outcome '.txt' file is prepared from GWAS summary statistics, and must conta
 `chr1:1234 A T 0.8 0.002 1.23e-10`
 _or_
 `rs1234 A T 0.8 0.002 1.23e-10`  
-_**Important: don't forget to remove duplicates, `0` and/or `NA/Na/nan...` in outcome data if necessary.**_  
+_**IMPORTANT: don't forget to remove duplicates, `0` and/or `NA/Na/nan...` in outcome data if necessary.**_  
 
 # **Usage**  
 
