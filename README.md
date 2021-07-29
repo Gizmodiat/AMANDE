@@ -96,7 +96,7 @@ The 'summary.txt' file in the main folder gives several important data from the 
 
 Column #1 and #2:  
 `Gene/Protein`: ID of exposures.  
- `IV`: number of instrumental variables used for the Mendelian randomization._**Minimum 3 to perform Mendelian randomizations, and 4 for MR-PRESSO.**_  
+ `IV`: number of IVs according to the puning settings._**Minimum 3 to perform Mendelian randomizations, and 4 for MR-PRESSO.**_  
 
 Columns #3 to #8: Mendelian Randomizations (from the MendelianRandomization R package) :  
 `IVW_QQ_P`: Cochran's Q test P-value about the inverse-variance weighted estimate.  
