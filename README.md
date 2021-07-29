@@ -74,6 +74,7 @@ The outcome '.txt' file is prepared from GWAS summary statistics, and must conta
 `chr1:1234 A T 0.8 0.002 1.23e-10`
 _or_
 `rs1234 A T 0.8 0.002 1.23e-10`  
+_Don't forget to remove `0` and/or `NA` in outcome data. YRI AFR Yoruba in Ibadan, Nigera
 
 # **Usage**  
 
@@ -148,8 +149,8 @@ _**Please cite all or a part of the following papers depending on exposures data
 
 **INTERVAL:** Sun et al.  Genomic atlas of the human plasma proteome. _Nature_, 2018. 
 
-
-`pop_code       super_pop_code                       pop_name`  
+_LDlink population codes:_  
+pop_code, super_pop_code, pop_name:  
 `ALL            ALL                           ALL POPULATIONS`  
 `AFR            AFR                                   AFRICAN`  
 `YRI            AFR                  Yoruba in Ibadan, Nigera`  
