@@ -61,7 +61,7 @@ Edit the config.txt file with your own paths to the folders eQTLGen_for_AMANDE, 
 
 _Optional:_  
 Adjust settings for IVs pruning (default settings are CEU population, LD r2 threshold <0.1 and MAF>0.01) by modifying `pop = "CEU", r2_threshold = "0.1", maf_threshold = "0.01"` in the LDlink.R file (population codes for LDlink are given below):  
-`gedit system/LDlink.R`  p 
+`gedit system/LDlink.R`   
 
 # **Input files**  
 AMANDE needs two input files: one for exposures and one for the outcome.  
