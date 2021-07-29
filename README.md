@@ -79,6 +79,7 @@ _**IMPORTANT: don't forget to remove duplicates, `0` and/or `NA/Na/nan...` in ou
 
 Run AMANDE with the following syntax:  
 `./AMANDE.exe <input_exposures.txt> <input_outcome.txt> [-rs | -chr] [-eqtlgen | -gtex | interval] [-window] [-pvalue] [-output]`  
+
 `-rs | -chr`: select the snp ID format of outcome data.  
 `-eqtlgen | -gtex | interval`: select the exposure of interest.  
 -`window`: set the window from which performs Mendelian randomizations and colocalizations in kilobases (for example `-500` will set a window of 500 kilobases arround the genomic positions entered for exposures in the 'input_exposures.txt' file).  
