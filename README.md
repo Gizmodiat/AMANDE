@@ -64,7 +64,7 @@ Adjust settings for IVs pruning (default settings are CEU population, LD r2 thre
 AMANDE needs two input files: one for exposures and one for the outcome.  
 
 _**Prepare an input file for exposures**_: genes (eQTLGen or GTEx) or proteins (INTERVAL):  
-For genes, prepare a '.txt' file containing a list of the Ensembl ID of the exposures and the genomic positions (chromosome and position) from which perform the IVs pruning and colocalizations analysis: each line of this file will contain the Ensembl ID of an exposure and a genomic position like `ENSG00000042493_2_85645555` (see 'example_ENSEMBL_list.txt' in the 'example' folder).  
+For genes, prepare a '.txt' file containing a list of the Ensembl ID of the exposures and the genomic positions (chromosome and position) from which perform IVs pruning and colocalizations: each line of this file will contain the Ensembl ID of an exposure and a genomic position like `ENSG00000042493_2_85645555` (see 'example_ENSEMBL_list.txt' in the 'example' folder).  
 
 For proteins, prepare an equivalent '.txt' file containning the ID of SOMAmers and proteins, and the genomic positions like `IL6R.8092.29.3_1_154377669` (see 'example_INTERVAL_list.txt' in the example folder).  
 
