@@ -1,6 +1,6 @@
 # Automated Mendelian rAndomization aND bayEsian colocalization (AMANDE)
 AMANDE performs automated Mendelian randomizations, Bayesian colocalizations and horizontal pleiotropy detections from genetic association studies.  
-AMANDE uses eQTLGen, GTEx V8 and INTERVAL as exposures and Genome-Wide association studies (GWAS) as outomes to perform analysis from a list of exposures (genes or proteins). Instrumental variables (IVs) pruning and harmonizations for alleles are performed automatically.  
+AMANDE uses eQTLGen, GTEx V8 and INTERVAL as exposures and Genome-Wide association studies (GWAS) as outomes to perform analysis from a list of exposures (genes or proteins). Instrumental variables (IVs) pruning for Mendelian randomizations and harmonizations for alleles are performed automatically.  
 AMANDE is designed for **hg19/build37**.  
 _(tested with Ubuntu 20.04.2 LTS, R version 4.1.0 and python2.7)_
 
