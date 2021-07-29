@@ -83,9 +83,9 @@ See the example outcome files if downloaded.
 
 Run AMANDE with the following syntax:  
 `./AMANDE.exe <input_exposures.txt> <input_outcome.txt> [-rs | -chr] [-eqtlgen | -gtex | interval] [-window] [-pvalue] [-output]`  
-`-rs | -chr`: select the snp ID format of outcome.  
+`-rs | -chr`: select the snp ID format of outcome data.  
 `-eqtlgen | -gtex | interval`: select the exposure of interest.  
--`window`: set the window from which performs Mendelian randomizations and colocalizations in kilobases (for example `-500` will set a window of 500 kilobases arround the genomic positions entered for exposures in the 'input_exposures.txt file).  
+-`window`: set the window from which performs Mendelian randomizations and colocalizations in kilobases (for example `-500` will set a window of 500 kilobases arround the genomic positions entered for exposures in the 'input_exposures.txt' file).  
 `-pvalue`: the P-value association threshold between snps and exposures used for IVs pruning.  
 `-output`: the output prefix name. This name will be the name of the main output folder and the prefix of sub-folders and files.  
 
