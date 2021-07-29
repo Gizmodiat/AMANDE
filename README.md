@@ -43,7 +43,6 @@ Unzip:
 Clone AMANDE to your home folder:  
 `cd ~`  
 `git clone https://github.com/Gizmodiat/AMANDE.git`  
-`unzip AMANDE.zip`  
 `cd AMANDE`  
 
 Replace the example token `token="enter_yours"` with your own token in the LDlink.R file:  
