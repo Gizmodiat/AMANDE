@@ -120,7 +120,6 @@ Columns #13 to #18: Evaluation of horizontal pleiotropy (from the MPRESSO R pack
 `Distortion_Test_P`: distorsion test P-value. Can be empty if the outlier test does not detect which IV(s) is/are outlier(s).  
 
 _**Details of analysis**_  
-
 Subfolders of AMANDE contain input files for each package, and output files generated (for example the inverse-variance weighted and Egger regression plots as '.pdf' files for Mendelian Randomizations, and a list of outliers if identified by MR-PRESSO).  
 
 The subfolders 'IVs' provides details about the IVs pruning, including potential IVs, list of IVs...  
