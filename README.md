@@ -82,23 +82,21 @@ Run AMANDE with the following syntax:
 `-rs | -chr`: select the snp ID format of outcome.  
 `-eqtlgen | -gtex | interval`: select the exposure of interest.  
 -`window`: set the window from which performs Mendelian randomizations and colocalizations in kilobases (for example `-500` will set a window of 500 kilobases arround the genomic positions entered for exposures in the 'input_exposures.txt file).  
-`-pvalue`: the association P-value threshold for used for  for association association threshold for IVs pruning.  
+`-pvalue`: the P-value association threshold between snps and exposures used for IVs pruning.  
 `-output`: the output prefix name. This name will be the name of the main output folder and the prefix of sub-folders and files.  
 
 _Optional: run AMANDE with the example data:_  
-
 `./AMANDE.exe example_ENSEMBL_list.txt CAD_Harst_chr.txt -chr -eqtlgen -250 -0.001 -eQTLGen_CAD_250kb_p001`  
 `./AMANDE.exe example_INTERVAL_list.txt CAD_Harst_rs.txt -rs -interval -500 -0.05 -INTERVAL_CAD_500kb_p05`  
 
 # **Outputs**  
 
-_**Summary of analysis**_
-
-The 'summary.txt' file in the main folder presents several important data from the Mendelian randomizations and colocalizations analysis:  
+_**Summary of analysis**_  
+The 'summary.txt' file in the main folder gives several important data from the Mendelian randomizations and colocalizations analysis:  
 
 Column #1 and #2:  
-`Gene/Protein`: ID of exposures._**Minimum 3 to perform Mendelian randomizations, and 4 for MRPRESSO.**_
- `IV`: number of instrumental variables used for the Mendelian randomization.  
+`Gene/Protein`: ID of exposures.  
+ `IV`: number of instrumental variables used for the Mendelian randomization._**Minimum 3 to perform Mendelian randomizations, and 4 for MRPRESSO.**_  
 
 Columns #3 to #8: Mendelian Randomizations (from the MendelianRandomization R package) :  
 `IVW_QQ_P`: Cochran's Q test P-value about the inverse-variance weighted estimate.  
@@ -112,7 +110,7 @@ Columns #9 to #12: Bayesian colocalizations (from the hyprcoloc R package):
 `Posterior_prob`: posterior probability.  
 `Regional_prob`: regional probability.  
 `Candidate_snp`: causal candidate snp.  
-`Posterior_explained_by_snp`: posterior probability of the causel candidate snp.  
+`Posterior_explained_by_snp`: posterior probability of the causal candidate snp.  
 
 Columns #13 to #18: Evaluation of horizontal pleiotropy (from the MPRESSO R package)._**Can be empty if there are less than 4 IVs**_: 
 `Global_Test_P`: P-value of the global test.
@@ -122,14 +120,14 @@ Columns #13 to #18: Evaluation of horizontal pleiotropy (from the MPRESSO R pack
 `P_Out-Corr`: inverse-variance weighted P-value after outlier(s) removal.  
 `Distortion_Test_P`: distorsion test P-value. Can be empty if the outlier test does not detect which IV(s) is/are outlier(s).  
 
-_**Details of analysis**_
+_**Details of analysis**_  
 
-The subfolders of AMANDE contain input files for each package, and the output files generated (for example the inverse-variance weighted and Egger regression plots as '.pdf' files for Mendelian Randomizations, or a list of outliers (if identified) for MR-PRESSO).  
+Subfolders of AMANDE contain input files for each package, and output files generated (for example the inverse-variance weighted and Egger regression plots as '.pdf' files for Mendelian Randomizations, and a list of outliers if identified by MR-PRESSO).  
 
-The subfolders 'IVs' provides details about the pruning of instrumental variables, including potential IVs, list of IVs...  
+The subfolders 'IVs' provides details about the IVs pruning, including potential IVs, list of IVs...  
 _**In case of error during pruning, pay attention to the 'log_SNPClip.txt' file to check if it is due to a LDlink server error**_
 
-_Please note that harmonizations are performed after instrumental variables pruning, so for the inputs of packages. Data about instrumental variables in the 'IVs' folders are thus not harmonized._ 
+_Please note that harmonizations are performed after IVs pruning, so for inputs files of packages. Thus, data about IVs in the 'IVs' folders are not harmonized._ 
 
 # **Don't forget to cite...**  
 _...and read these papers :blush:_
