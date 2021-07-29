@@ -106,7 +106,7 @@ Columns #3 to #8: Mendelian Randomizations (from the MendelianRandomization R pa
 `Egger_P`: Egger P-value.  
 `Egger_Intercept_P`: Egger intercept P-value.  
 
-Columns #9 to #12: Bayesian colocalizations (from the hyprcoloc R package):  _**WARNING: empty if there are duplicated, 0 or NAs in outcome data.**_  
+Columns #9 to #12: Bayesian colocalizations (from the hyprcoloc R package):  _**WARNING: empty if there are duplicates, 0 or NAs in outcome data.**_  
 `Posterior_prob`: posterior probability.  
 `Regional_prob`: regional probability.  
 `Candidate_snp`: causal candidate snp.  
