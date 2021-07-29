@@ -90,8 +90,8 @@ Run AMANDE with the following syntax:
 `-output`: the output prefix name. This name will be the name of the main output folder and the prefix of sub-folders and files.  
 
 _Optional: run AMANDE with the example data:_  
-`./AMANDE.exe example_ENSEMBL_list.txt CAD_Harst_chr.txt -chr -eqtlgen -250 -0.001 -eQTLGen_CAD_250kb_p001`  
-`./AMANDE.exe example_INTERVAL_list.txt CAD_Harst_rs.txt -rs -interval -500 -0.05 -INTERVAL_CAD_500kb_p05`  
+`./AMANDE.exe path_to_example_ENSEMBL_list.txt path_to_CAD_Harst_chr.txt -chr -eqtlgen -250 -0.001 -eQTLGen_CAD_250kb_p001`  
+`./AMANDE.exe path_to_example_INTERVAL_list.txt path_to_CAD_Harst_rs.txt -rs -interval -500 -0.05 -INTERVAL_CAD_500kb_p05`  
 
 # **Outputs**  
 
