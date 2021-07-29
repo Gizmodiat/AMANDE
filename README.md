@@ -32,12 +32,6 @@ https://www.dropbox.com/s/6crvgalonj68q6u/snp151_for_AMANDE.zip?dl=0
 Unzip:  
 `unzip snp151_for_AMANDE.zip`  
 
-_Optional:_  
-Download an example of outcome data (164MB compressed) for genetic associations with coronary artery disease (van der Harst and Niek Verweij. _Circulation Research_, 2018) from:  
-https://www.dropbox.com/s/8ex319rtvjmz4b0/GWAS_example.zip?dl=0  
-Unzip:  
-`unzip GWAS_example.zip`  
-
 # **Installation and configuration**  
 
 Clone AMANDE to your home folder and give permissions:  
@@ -79,8 +73,7 @@ The outcome '.txt' file is prepared from GWAS summary statistics, and must conta
 `chr1:1234 A T 0.8 0.002 1.23e-10`
 _or_
 `rs1234 A T 0.8 0.002 1.23e-10`  
-_Don't forget to remove `0` and/or `NA` in outcome data if necessary._  
-See the example outcome files if downloaded.  
+_**Don't forget to remove duplicates, `0` and/or `NA/Na/nan...` in outcome data if necessary.**_  
 
 # **Usage**  
 
@@ -92,9 +85,8 @@ Run AMANDE with the following syntax:
 `-pvalue`: the P-value association threshold between snps and exposures used for IVs pruning.  
 `-output`: the output prefix name. This name will be the name of the main output folder and the prefix of sub-folders and files.  
 
-_Optional: run AMANDE with the example data:_  
-`./AMANDE.exe path_to_example_ENSEMBL_list.txt path_to_CAD_Harst_chr.txt -chr -eqtlgen -250 -0.001 -eQTLGen_CAD_250kb_p001`  
-`./AMANDE.exe path_to_example_INTERVAL_list.txt path_to_CAD_Harst_rs.txt -rs -interval -500 -0.05 -INTERVAL_CAD_500kb_p05`  
+_For example for eqtlgen:_  
+`./AMANDE.exe example_ENSEMBL_list.txt CAD.txt -chr -eqtlgen -250 -0.001 -eQTLGen_CAD_250kb_p001`  
 
 # **Outputs**  
 
