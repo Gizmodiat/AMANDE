@@ -56,8 +56,8 @@ Edit the config.txt file with your own paths to the folders eQTLGen_for_AMANDE, 
 `cd AMANDE`  
 `gedit config.txt`  
 
-_Optional:_  
-Adjust settings for IVs pruning (default settings are CEU population, LD r2 threshold <0.1 and MAF>0.01) by modifying `pop = "CEU", r2_threshold = "0.1", maf_threshold = "0.01"` in the LDlink.R file (population codes for LDlink are given below):  
+_Optional:  
+Adjust settings for IVs pruning (default settings are CEU population, LD r2 threshold <0.1 and MAF>0.01) by modifying `pop = "CEU", r2_threshold = "0.1", maf_threshold = "0.01"` in the LDlink.R file (population codes for LDlink are given below):_  
 `gedit system/LDlink.R`   
 
 # **Input files**  
