@@ -96,7 +96,7 @@ The 'summary.txt' file in the main folder gives several important data from the 
 
 Column #1 and #2:  
 `Gene/Protein`: ID of exposures.  
- `IV`: number of IVs according to the puning settings._**Minimum 3 to perform Mendelian randomizations, and 4 for MR-PRESSO.**_  
+ `IV`: number of IVs according to the puning settings. _**Minimum 3 to perform Mendelian randomizations, and 4 for MR-PRESSO.**_  
 
 Columns #3 to #8: Mendelian Randomizations (from the MendelianRandomization R package) :  
 `IVW_QQ_P`: Cochran's Q test P-value about the inverse-variance weighted estimate.  
@@ -106,13 +106,14 @@ Columns #3 to #8: Mendelian Randomizations (from the MendelianRandomization R pa
 `Egger_P`: Egger P-value.  
 `Egger_Intercept_P`: Egger intercept P-value.  
 
-Columns #9 to #12: Bayesian colocalizations (from the hyprcoloc R package):  
+Columns #9 to #12: Bayesian colocalizations (from the hyprcoloc R package):  _**If this section is empty, don't forget to remote Na in outcome data**_  
+
 `Posterior_prob`: posterior probability.  
 `Regional_prob`: regional probability.  
 `Candidate_snp`: causal candidate snp.  
 `Posterior_explained_by_snp`: posterior probability of the causal candidate snp.  
 
-Columns #13 to #18: Evaluation of horizontal pleiotropy (from the MPRESSO R package)._**Can be empty if there are less than 4 IVs**_: 
+Columns #13 to #18: Evaluation of horizontal pleiotropy (from the MPRESSO R package). _**Can be empty if there are less than 4 IVs**_: 
 `Global_Test_P`: P-value of the global test.  
 `Estimate`: inverse-variance weighted estimate.  
 `P`: inverse-variance weighted P-value.  
