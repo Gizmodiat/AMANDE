@@ -59,7 +59,7 @@ Edit the config.txt file with your own paths to the folders eQTLGen_for_AMANDE, 
 
 _Optional:_  
 Adjust settings for IVs pruning (default settings are CEU population, LD r2 threshold <0.1 and MAF>0.01) by modifying `pop = "CEU", r2_threshold = "0.1", maf_threshold = "0.01"` in the LDlink.R file (population codes for LDlink are given below):  
-`gedit system/LDlink.R`  
+`gedit system/LDlink.R`  p 
 
 # **Input files**  
 AMANDE needs two input files: one for exposures and one for the outcome.  
@@ -132,7 +132,7 @@ _Please note that harmonizations are performed after IVs pruning, so for inputs 
 # **Don't forget to cite...**  
 _...and read these papers :blush:_
 
-_**Please cite all or a part of the following papers depending on exposure data used:**_
+_**Please cite all or a part of the following papers depending on exposures data used:**_
 
 **LDlink:** Machiela and Chanock. LDlink: a web-based application for exploring population-specific haplotype structure and linking correlated alleles of possible functional variants. _Bioinformatics_, 2015.  
 
@@ -147,3 +147,38 @@ _**Please cite all or a part of the following papers depending on exposure data 
 **GTEx:** The GTEx Consortium. The GTEx Consortium atlas of genetic regulatory effects across human tissues. _Science_, 2020.  
 
 **INTERVAL:** Sun et al.  Genomic atlas of the human plasma proteome. _Nature_, 2018. 
+
+
+`pop_code       super_pop_code                       pop_name`
+`ALL            ALL                           ALL POPULATIONS`
+`AFR            AFR                                   AFRICAN` 
+`YRI            AFR                  Yoruba in Ibadan, Nigera`
+`LWK            AFR                    Luhya in Webuye, Kenya`
+`GWD            AFR                 Gambian in Western Gambia`
+`MSL            AFR                     Mende in Sierra Leone`
+`ESN            AFR                            Esan in Nigera`
+`ASW            AFR   Americans of African Ancestry in SW USA`
+`ACB            AFR           African Carribbeans in Barbados`
+`AMR            AMR                         AD MIXED AMERICAN`
+`MXL            AMR    Mexican Ancestry from Los Angeles, USA`
+`PUR            AMR            Puerto Ricans from Puerto Rico`
+`CLM            AMR        Colombians from Medellin, Colombia`
+`PEL            AMR                 Peruvians from Lima, Peru`
+`EAS            EAS                                EAST ASIAN`
+`CHB            EAS              Han Chinese in Bejing, China`
+`JPT            EAS                  Japanese in Tokyo, Japan`
+`CHS            EAS                      Southern Han Chinese`
+`CDX            EAS       Chinese Dai in Xishuangbanna, China`
+`KHV            EAS         Kinh in Ho Chi Minh City, Vietnam`
+`EUR            EUR                                  EUROPEAN`
+`CEU            EUR Utah Residents from North and West Europe`
+`TSI            EUR                         Toscani in Italia`
+`FIN            EUR                        Finnish in Finland`
+`GBR            EUR           British in England and Scotland`
+`IBS            EUR               Iberian population in Spain`
+`SAS            SAS                               SOUTH ASIAN`
+`GIH            SAS  Gujarati Indian from Houston, Texas, USA`
+`PJL            SAS             Punjabi from Lahore, Pakistan`
+`BEB            SAS                   Bengali from Bangladesh`
+`STU            SAS              Sri Lankan Tamil from the UK`
+`ITU            SAS                 Indian Telugu from the UK`
